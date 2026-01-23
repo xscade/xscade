@@ -154,24 +154,30 @@ export default function ScrollMorphHero() {
             const windowHeight = window.innerHeight;
             
             // Calculate scroll progress when section is in viewport
-            // Start animating when section enters viewport (top of section reaches 80% of viewport)
+            // Start animating when section enters viewport (top of section reaches 50% of viewport)
             // End when section bottom leaves viewport
             const sectionTop = rect.top;
             const sectionHeight = rect.height;
             const sectionBottom = sectionTop + sectionHeight;
             
+            // Slow down factor - makes animation 3x slower
+            const slowDownFactor = 3;
+            
             // When section enters viewport (from bottom)
-            if (sectionTop < windowHeight * 0.8 && sectionBottom > 0) {
-                // Calculate progress: 0 when section top is at 80% viewport, 1 when section bottom is at top
-                const startPoint = windowHeight * 0.8;
-                const endPoint = -sectionHeight;
+            if (sectionTop < windowHeight * 0.5 && sectionBottom > -sectionHeight * 2) {
+                // Calculate progress: 0 when section top is at 50% viewport, 1 when section bottom is well past top
+                const startPoint = windowHeight * 0.5;
+                const endPoint = -sectionHeight * 2; // Extend end point further down
                 const scrollRange = startPoint - endPoint;
                 const currentProgress = (startPoint - sectionTop) / scrollRange;
                 
+                // Apply slow down factor - progress much slower
+                const slowedProgress = Math.min(1, currentProgress / slowDownFactor);
+                
                 // Map to virtual scroll range (0 to MAX_SCROLL)
-                const virtualScrollValue = Math.max(0, Math.min(MAX_SCROLL, currentProgress * MAX_SCROLL));
+                const virtualScrollValue = Math.max(0, Math.min(MAX_SCROLL, slowedProgress * MAX_SCROLL));
                 virtualScroll.set(virtualScrollValue);
-            } else if (sectionTop >= windowHeight * 0.8) {
+            } else if (sectionTop >= windowHeight * 0.5) {
                 // Section hasn't entered yet
                 virtualScroll.set(0);
             } else {
@@ -194,11 +200,12 @@ export default function ScrollMorphHero() {
     }, [virtualScroll]);
 
     // Morph Progress: 0 (Circle) -> 1 (Bottom Arc)
-    const morphProgress = useTransform(virtualScroll, [0, 600], [0, 1]);
-    const smoothMorph = useSpring(morphProgress, { stiffness: 40, damping: 20 });
+    // Increased range from 600 to 1500 to make morph slower
+    const morphProgress = useTransform(virtualScroll, [0, 1500], [0, 1]);
+    const smoothMorph = useSpring(morphProgress, { stiffness: 30, damping: 25 });
 
-    // Scroll Rotation (Shuffling)
-    const scrollRotate = useTransform(virtualScroll, [600, 3000], [0, 360]);
+    // Scroll Rotation (Shuffling) - starts after morph begins
+    const scrollRotate = useTransform(virtualScroll, [1500, 3000], [0, 360]);
     const smoothScrollRotate = useSpring(scrollRotate, { stiffness: 40, damping: 20 });
 
     // --- Mouse Parallax ---
@@ -267,16 +274,22 @@ export default function ScrollMorphHero() {
                 <div className="absolute z-0 flex flex-col items-center justify-center text-center pointer-events-none top-1/2 -translate-y-1/2">
                     <motion.h1
                         initial={{ opacity: 0, y: 20, filter: "blur(10px)" }}
-                        animate={introPhase === "circle" && morphValue < 0.5 ? { opacity: 1 - morphValue * 2, y: 0, filter: "blur(0px)" } : { opacity: 0, filter: "blur(10px)" }}
-                        transition={{ duration: 1 }}
+                        animate={introPhase === "circle" && morphValue < 0.25 ? { 
+                            opacity: Math.max(0, 1 - (morphValue * 4)), 
+                            y: 0, 
+                            filter: "blur(0px)" 
+                        } : { opacity: 0, filter: "blur(10px)" }}
+                        transition={{ duration: 1.5 }}
                         className="text-2xl font-medium tracking-tight text-foreground md:text-4xl"
                     >
                         The future is built on AI.
                     </motion.h1>
                     <motion.p
                         initial={{ opacity: 0 }}
-                        animate={introPhase === "circle" && morphValue < 0.5 ? { opacity: 0.5 - morphValue } : { opacity: 0 }}
-                        transition={{ duration: 1, delay: 0.2 }}
+                        animate={introPhase === "circle" && morphValue < 0.25 ? { 
+                            opacity: Math.max(0, 0.7 - (morphValue * 2.8)) 
+                        } : { opacity: 0 }}
+                        transition={{ duration: 1.5, delay: 0.2 }}
                         className="mt-4 text-xs font-bold tracking-[0.2em] text-muted-foreground"
                     >
                         SCROLL TO EXPLORE
