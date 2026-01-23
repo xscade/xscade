@@ -116,7 +116,6 @@ const lerp = (start: number, end: number, t: number) => start * (1 - t) + end * 
 export default function ScrollMorphHero() {
     const [introPhase, setIntroPhase] = useState<AnimationPhase>("scatter");
     const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
-    const [isHovered, setIsHovered] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
 
     // --- Container Size ---
@@ -151,43 +150,85 @@ export default function ScrollMorphHero() {
         const container = containerRef.current;
         if (!container) return;
 
+        // Track if mouse is actually over the container
+        let mouseOverContainer = false;
+
+        const handleMouseEnter = () => {
+            mouseOverContainer = true;
+        };
+
+        const handleMouseLeave = () => {
+            mouseOverContainer = false;
+        };
+
         const handleWheel = (e: WheelEvent) => {
-            // Only prevent default if hovering over the component and it's in interactive phase
-            if (isHovered && introPhase === "circle") {
+            // Only prevent default if:
+            // 1. Mouse is over the container
+            // 2. Component is in interactive phase (circle)
+            // 3. Virtual scroll is not at boundaries (allows normal scroll when at limits)
+            const isInteractive = introPhase === "circle";
+            const isAtTop = scrollRef.current <= 0 && e.deltaY < 0;
+            const isAtBottom = scrollRef.current >= MAX_SCROLL && e.deltaY > 0;
+
+            if (mouseOverContainer && isInteractive && !isAtTop && !isAtBottom) {
                 e.preventDefault();
+                e.stopPropagation();
                 const newScroll = Math.min(Math.max(scrollRef.current + e.deltaY, 0), MAX_SCROLL);
                 scrollRef.current = newScroll;
                 virtualScroll.set(newScroll);
             }
+            // If at boundaries, allow normal page scroll
         };
 
         let touchStartY = 0;
+        let touchStarted = false;
+
         const handleTouchStart = (e: TouchEvent) => {
-            touchStartY = e.touches[0].clientY;
-        };
-        const handleTouchMove = (e: TouchEvent) => {
             if (introPhase === "circle") {
-                e.preventDefault();
+                touchStarted = true;
+                touchStartY = e.touches[0].clientY;
+            }
+        };
+
+        const handleTouchMove = (e: TouchEvent) => {
+            if (touchStarted && introPhase === "circle") {
                 const touchY = e.touches[0].clientY;
                 const deltaY = touchStartY - touchY;
                 touchStartY = touchY;
 
-                const newScroll = Math.min(Math.max(scrollRef.current + deltaY, 0), MAX_SCROLL);
-                scrollRef.current = newScroll;
-                virtualScroll.set(newScroll);
+                const isAtTop = scrollRef.current <= 0 && deltaY < 0;
+                const isAtBottom = scrollRef.current >= MAX_SCROLL && deltaY > 0;
+
+                if (!isAtTop && !isAtBottom) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const newScroll = Math.min(Math.max(scrollRef.current + deltaY, 0), MAX_SCROLL);
+                    scrollRef.current = newScroll;
+                    virtualScroll.set(newScroll);
+                }
             }
         };
 
+        const handleTouchEnd = () => {
+            touchStarted = false;
+        };
+
+        container.addEventListener("mouseenter", handleMouseEnter);
+        container.addEventListener("mouseleave", handleMouseLeave);
         container.addEventListener("wheel", handleWheel, { passive: false });
         container.addEventListener("touchstart", handleTouchStart, { passive: false });
         container.addEventListener("touchmove", handleTouchMove, { passive: false });
+        container.addEventListener("touchend", handleTouchEnd, { passive: true });
 
         return () => {
+            container.removeEventListener("mouseenter", handleMouseEnter);
+            container.removeEventListener("mouseleave", handleMouseLeave);
             container.removeEventListener("wheel", handleWheel);
             container.removeEventListener("touchstart", handleTouchStart);
             container.removeEventListener("touchmove", handleTouchMove);
+            container.removeEventListener("touchend", handleTouchEnd);
         };
-    }, [virtualScroll, isHovered, introPhase]);
+    }, [virtualScroll, introPhase]);
 
     // Morph Progress: 0 (Circle) -> 1 (Bottom Arc)
     const morphProgress = useTransform(virtualScroll, [0, 600], [0, 1]);
@@ -257,8 +298,6 @@ export default function ScrollMorphHero() {
         <div 
             ref={containerRef} 
             className="relative w-full h-[800px] bg-background overflow-hidden"
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
         >
             <div className="flex h-full w-full flex-col items-center justify-center perspective-1000">
                 {/* Intro Text (Fades out) */}
