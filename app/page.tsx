@@ -6,7 +6,6 @@ import { Footer } from "@/components/Footer";
 import { ServicesCarousel } from "@/components/ServicesCarousel";
 import { SplineScene } from "@/components/SplineScene";
 import { TestimonialsSection } from "@/components/ui/testimonial-v2";
-import ScrollMorphHero from "@/components/ui/scroll-morph-hero";
 import { motion } from "framer-motion";
 import { 
   Users, 
@@ -130,11 +129,6 @@ export default function HomePage() {
 
       {/* Testimonials Section */}
       <TestimonialsSection />
-
-      {/* Scroll Morph Hero Section */}
-      <section className="relative w-full overflow-hidden bg-background">
-        <ScrollMorphHero />
-      </section>
 
       <Footer />
     </div>
