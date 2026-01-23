@@ -142,93 +142,56 @@ export default function ScrollMorphHero() {
         return () => observer.disconnect();
     }, []);
 
-    // --- Virtual Scroll Logic ---
+    // --- Page Scroll Logic (No scroll capture - responds to page scroll) ---
     const virtualScroll = useMotionValue(0);
-    const scrollRef = useRef(0);
 
     useEffect(() => {
         const container = containerRef.current;
         if (!container) return;
 
-        // Track if mouse is actually over the container
-        let mouseOverContainer = false;
-
-        const handleMouseEnter = () => {
-            mouseOverContainer = true;
-        };
-
-        const handleMouseLeave = () => {
-            mouseOverContainer = false;
-        };
-
-        const handleWheel = (e: WheelEvent) => {
-            // Only prevent default if:
-            // 1. Mouse is over the container
-            // 2. Component is in interactive phase (circle)
-            // 3. Virtual scroll is not at boundaries (allows normal scroll when at limits)
-            const isInteractive = introPhase === "circle";
-            const isAtTop = scrollRef.current <= 0 && e.deltaY < 0;
-            const isAtBottom = scrollRef.current >= MAX_SCROLL && e.deltaY > 0;
-
-            if (mouseOverContainer && isInteractive && !isAtTop && !isAtBottom) {
-                e.preventDefault();
-                e.stopPropagation();
-                const newScroll = Math.min(Math.max(scrollRef.current + e.deltaY, 0), MAX_SCROLL);
-                scrollRef.current = newScroll;
-                virtualScroll.set(newScroll);
-            }
-            // If at boundaries, allow normal page scroll
-        };
-
-        let touchStartY = 0;
-        let touchStarted = false;
-
-        const handleTouchStart = (e: TouchEvent) => {
-            if (introPhase === "circle") {
-                touchStarted = true;
-                touchStartY = e.touches[0].clientY;
+        const updateScroll = () => {
+            const rect = container.getBoundingClientRect();
+            const windowHeight = window.innerHeight;
+            
+            // Calculate scroll progress when section is in viewport
+            // Start animating when section enters viewport (top of section reaches 80% of viewport)
+            // End when section bottom leaves viewport
+            const sectionTop = rect.top;
+            const sectionHeight = rect.height;
+            const sectionBottom = sectionTop + sectionHeight;
+            
+            // When section enters viewport (from bottom)
+            if (sectionTop < windowHeight * 0.8 && sectionBottom > 0) {
+                // Calculate progress: 0 when section top is at 80% viewport, 1 when section bottom is at top
+                const startPoint = windowHeight * 0.8;
+                const endPoint = -sectionHeight;
+                const scrollRange = startPoint - endPoint;
+                const currentProgress = (startPoint - sectionTop) / scrollRange;
+                
+                // Map to virtual scroll range (0 to MAX_SCROLL)
+                const virtualScrollValue = Math.max(0, Math.min(MAX_SCROLL, currentProgress * MAX_SCROLL));
+                virtualScroll.set(virtualScrollValue);
+            } else if (sectionTop >= windowHeight * 0.8) {
+                // Section hasn't entered yet
+                virtualScroll.set(0);
+            } else {
+                // Section has passed
+                virtualScroll.set(MAX_SCROLL);
             }
         };
 
-        const handleTouchMove = (e: TouchEvent) => {
-            if (touchStarted && introPhase === "circle") {
-                const touchY = e.touches[0].clientY;
-                const deltaY = touchStartY - touchY;
-                touchStartY = touchY;
+        // Initial update
+        updateScroll();
 
-                const isAtTop = scrollRef.current <= 0 && deltaY < 0;
-                const isAtBottom = scrollRef.current >= MAX_SCROLL && deltaY > 0;
-
-                if (!isAtTop && !isAtBottom) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    const newScroll = Math.min(Math.max(scrollRef.current + deltaY, 0), MAX_SCROLL);
-                    scrollRef.current = newScroll;
-                    virtualScroll.set(newScroll);
-                }
-            }
-        };
-
-        const handleTouchEnd = () => {
-            touchStarted = false;
-        };
-
-        container.addEventListener("mouseenter", handleMouseEnter);
-        container.addEventListener("mouseleave", handleMouseLeave);
-        container.addEventListener("wheel", handleWheel, { passive: false });
-        container.addEventListener("touchstart", handleTouchStart, { passive: false });
-        container.addEventListener("touchmove", handleTouchMove, { passive: false });
-        container.addEventListener("touchend", handleTouchEnd, { passive: true });
+        // Update on scroll
+        window.addEventListener("scroll", updateScroll, { passive: true });
+        window.addEventListener("resize", updateScroll, { passive: true });
 
         return () => {
-            container.removeEventListener("mouseenter", handleMouseEnter);
-            container.removeEventListener("mouseleave", handleMouseLeave);
-            container.removeEventListener("wheel", handleWheel);
-            container.removeEventListener("touchstart", handleTouchStart);
-            container.removeEventListener("touchmove", handleTouchMove);
-            container.removeEventListener("touchend", handleTouchEnd);
+            window.removeEventListener("scroll", updateScroll);
+            window.removeEventListener("resize", updateScroll);
         };
-    }, [virtualScroll, introPhase]);
+    }, [virtualScroll]);
 
     // Morph Progress: 0 (Circle) -> 1 (Bottom Arc)
     const morphProgress = useTransform(virtualScroll, [0, 600], [0, 1]);
