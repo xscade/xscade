@@ -1,7 +1,7 @@
 'use client';
 
 import { useTransform, motion, useMotionValue } from 'framer-motion';
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 
 interface Image {
 	src: string;
@@ -15,39 +15,66 @@ interface ZoomParallaxProps {
 
 export function ZoomParallax({ images }: ZoomParallaxProps) {
 	const container = useRef<HTMLDivElement>(null);
+	const stickySection = useRef<HTMLDivElement>(null);
 	const scrollProgress = useMotionValue(0);
 	const scrollRef = useRef(0);
 	const MAX_SCROLL = 1; // Normalized scroll progress (0 to 1)
+	const [isSectionReady, setIsSectionReady] = useState(false);
+	const isSectionReadyRef = useRef(false);
 
 	// Track if section is in viewport and should capture scroll
 	useEffect(() => {
 		const containerElement = container.current;
-		if (!containerElement) return;
-
-		let isInViewport = false;
-		let mouseOverContainer = false;
+		const stickyElement = stickySection.current;
+		if (!containerElement || !stickyElement) return;
 
 		const checkViewport = () => {
-			if (!containerElement) return;
-			const rect = containerElement.getBoundingClientRect();
-			const windowHeight = window.innerHeight;
-			// Section is fully in viewport when entire section is visible (top >= 0 and bottom <= windowHeight)
-			isInViewport = rect.top >= 0 && rect.bottom <= windowHeight;
+			if (!containerElement || !stickyElement) return;
+			const containerRect = containerElement.getBoundingClientRect();
+			
+			// Header height (h-16 = 64px)
+			const HEADER_HEIGHT = 64;
+			
+			// Activate when container's top is within header height from the top of viewport
+			// top <= HEADER_HEIGHT means the section has reached the bottom of the header
+			// bottom > 0 means the section is still visible (hasn't scrolled past completely)
+			const ready = containerRect.top <= HEADER_HEIGHT && containerRect.bottom > 0;
+			isSectionReadyRef.current = ready;
+			setIsSectionReady(ready);
+			return ready;
 		};
 
-		const handleMouseEnter = () => {
-			mouseOverContainer = true;
-		};
-
-		const handleMouseLeave = () => {
-			mouseOverContainer = false;
+		const isMouseOverContainer = (clientX: number, clientY: number): boolean => {
+			if (!stickyElement) return false;
+			const rect = stickyElement.getBoundingClientRect();
+			// Check if mouse is within the bounds of the sticky section (the actual interactive area)
+			return (
+				clientX >= rect.left &&
+				clientX <= rect.right &&
+				clientY >= rect.top &&
+				clientY <= rect.bottom
+			);
 		};
 
 		const handleWheel = (e: WheelEvent) => {
-			checkViewport();
+			// First check if section is ready - if not, allow normal page scroll
+			if (!isSectionReadyRef.current) {
+				return; // Overlay should block, but this is a safety check
+			}
 			
-			// Only capture scroll if section is in viewport and mouse is over it
-			if (isInViewport && mouseOverContainer) {
+			const isInViewport = checkViewport();
+			
+			// Only check mouse position and capture scroll AFTER container top has reached 0 (touches header)
+			// This prevents early activation when section is still entering viewport
+			if (!isInViewport) {
+				return; // Section not ready yet, allow normal page scroll
+			}
+			
+			// Now check if mouse is over the sticky section
+			const mouseOver = isMouseOverContainer(e.clientX, e.clientY);
+			
+			// Only capture scroll if mouse is over the section
+			if (mouseOver) {
 				const isAtTop = scrollRef.current <= 0 && e.deltaY < 0;
 				const isAtBottom = scrollRef.current >= MAX_SCROLL && e.deltaY > 0;
 
@@ -72,31 +99,52 @@ export function ZoomParallax({ images }: ZoomParallaxProps) {
 		let touchStarted = false;
 
 		const handleTouchStart = (e: TouchEvent) => {
-			checkViewport();
-			if (isInViewport) {
+			const isInViewport = checkViewport();
+			
+			// Only activate touch after container top has reached 0 (touches header)
+			if (!isInViewport) {
+				return;
+			}
+			
+			const touch = e.touches[0];
+			if (touch && isMouseOverContainer(touch.clientX, touch.clientY)) {
 				touchStarted = true;
-				touchStartY = e.touches[0].clientY;
+				touchStartY = touch.clientY;
 			}
 		};
 
 		const handleTouchMove = (e: TouchEvent) => {
-			if (touchStarted && isInViewport) {
-				const touchY = e.touches[0].clientY;
-				const deltaY = touchStartY - touchY;
-				touchStartY = touchY;
+			const isInViewport = checkViewport();
+			
+			// Only process touch if section is ready and touch was started
+			if (!isInViewport || !touchStarted) {
+				return;
+			}
+			
+			const touch = e.touches[0];
+			if (!touch) return;
+			
+			// Verify touch is still over container
+			if (!isMouseOverContainer(touch.clientX, touch.clientY)) {
+				touchStarted = false;
+				return;
+			}
+			
+			const touchY = touch.clientY;
+			const deltaY = touchStartY - touchY;
+			touchStartY = touchY;
 
-				const isAtTop = scrollRef.current <= 0 && deltaY < 0;
-				const isAtBottom = scrollRef.current >= MAX_SCROLL && deltaY > 0;
+			const isAtTop = scrollRef.current <= 0 && deltaY < 0;
+			const isAtBottom = scrollRef.current >= MAX_SCROLL && deltaY > 0;
 
-				if (!isAtTop && !isAtBottom) {
-					e.preventDefault();
-					e.stopPropagation();
-					
-					const delta = deltaY * 0.001;
-					const newScroll = Math.min(Math.max(scrollRef.current + delta, 0), MAX_SCROLL);
-					scrollRef.current = newScroll;
-					scrollProgress.set(newScroll);
-				}
+			if (!isAtTop && !isAtBottom) {
+				e.preventDefault();
+				e.stopPropagation();
+				
+				const delta = deltaY * 0.001;
+				const newScroll = Math.min(Math.max(scrollRef.current + delta, 0), MAX_SCROLL);
+				scrollRef.current = newScroll;
+				scrollProgress.set(newScroll);
 			}
 		};
 
@@ -111,27 +159,21 @@ export function ZoomParallax({ images }: ZoomParallaxProps) {
 		window.addEventListener('scroll', checkViewport, { passive: true });
 		window.addEventListener('resize', checkViewport, { passive: true });
 		
-		// Mouse events
-		containerElement.addEventListener('mouseenter', handleMouseEnter);
-		containerElement.addEventListener('mouseleave', handleMouseLeave);
+		// Wheel events - attach to sticky section so overlay can block them
+		stickyElement.addEventListener('wheel', handleWheel, { passive: false });
 		
-		// Wheel events
-		containerElement.addEventListener('wheel', handleWheel, { passive: false });
-		
-		// Touch events
-		containerElement.addEventListener('touchstart', handleTouchStart, { passive: false });
-		containerElement.addEventListener('touchmove', handleTouchMove, { passive: false });
-		containerElement.addEventListener('touchend', handleTouchEnd, { passive: true });
+		// Touch events - attach to sticky section so overlay can block them
+		stickyElement.addEventListener('touchstart', handleTouchStart, { passive: false });
+		stickyElement.addEventListener('touchmove', handleTouchMove, { passive: false });
+		stickyElement.addEventListener('touchend', handleTouchEnd, { passive: true });
 
 		return () => {
 			window.removeEventListener('scroll', checkViewport);
 			window.removeEventListener('resize', checkViewport);
-			containerElement.removeEventListener('mouseenter', handleMouseEnter);
-			containerElement.removeEventListener('mouseleave', handleMouseLeave);
-			containerElement.removeEventListener('wheel', handleWheel);
-			containerElement.removeEventListener('touchstart', handleTouchStart);
-			containerElement.removeEventListener('touchmove', handleTouchMove);
-			containerElement.removeEventListener('touchend', handleTouchEnd);
+			stickyElement.removeEventListener('wheel', handleWheel);
+			stickyElement.removeEventListener('touchstart', handleTouchStart);
+			stickyElement.removeEventListener('touchmove', handleTouchMove);
+			stickyElement.removeEventListener('touchend', handleTouchEnd);
 		};
 	}, [scrollProgress]);
 
@@ -146,7 +188,7 @@ export function ZoomParallax({ images }: ZoomParallaxProps) {
 
 	return (
 		<div ref={container} className="relative h-[300vh]">
-			<div className="sticky top-0 h-screen overflow-hidden">
+			<div ref={stickySection} className="sticky top-0 h-screen overflow-hidden relative">
 				{images.map(({ src, alt }, index) => {
 					const scale = scales[index % scales.length];
 
@@ -166,6 +208,21 @@ export function ZoomParallax({ images }: ZoomParallaxProps) {
 						</motion.div>
 					);
 				})}
+				{/* Overlay that blocks ALL mouse interactions until section is ready */}
+				{/* When NOT ready: pointer-events-auto blocks all interactions (wheel, touch, hover, click) */}
+				{/* When ready: pointer-events-none allows interactions to pass through */}
+				<div
+					className={`absolute inset-0 z-[9999] ${
+						isSectionReady ? 'pointer-events-none' : 'pointer-events-auto'
+					}`}
+					style={{
+						top: 0,
+						left: 0,
+						right: 0,
+						bottom: 0,
+					}}
+					aria-hidden="true"
+				/>
 			</div>
 		</div>
 	);
