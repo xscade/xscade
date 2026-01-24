@@ -31,8 +31,8 @@ export function ZoomParallax({ images }: ZoomParallaxProps) {
 			if (!containerElement) return;
 			const rect = containerElement.getBoundingClientRect();
 			const windowHeight = window.innerHeight;
-			// Section is in viewport when top is above bottom of viewport and bottom is below top of viewport
-			isInViewport = rect.top < windowHeight && rect.bottom > 0;
+			// Section is fully in viewport when entire section is visible (top >= 0 and bottom <= windowHeight)
+			isInViewport = rect.top >= 0 && rect.bottom <= windowHeight;
 		};
 
 		const handleMouseEnter = () => {
