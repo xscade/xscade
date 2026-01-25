@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useMemo, useRef } from "react";
 import { motion, useTransform, useSpring, useMotionValue } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 // --- Types ---
 export type AnimationPhase = "scatter" | "line" | "circle" | "bottom-strip";
@@ -12,6 +13,13 @@ interface FlipCardProps {
     total: number;
     phase: AnimationPhase;
     target: { x: number; y: number; rotation: number; scale: number; opacity: number };
+}
+
+interface ScrollMorphHeroProps {
+    images?: string[];
+    title?: string;
+    subtitle?: string;
+    className?: string;
 }
 
 // --- FlipCard Component ---
@@ -56,7 +64,7 @@ function FlipCard({
             >
                 {/* Front Face */}
                 <div
-                    className="absolute inset-0 h-full w-full overflow-hidden rounded-xl shadow-lg bg-muted"
+                    className="absolute inset-0 h-full w-full overflow-hidden rounded-xl shadow-lg bg-gray-200"
                     style={{ backfaceVisibility: "hidden" }}
                 >
                     <img
@@ -73,7 +81,7 @@ function FlipCard({
                     style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
                 >
                     <div className="text-center">
-                        <p className="text-[8px] font-bold text-primary-foreground/80 uppercase tracking-widest mb-1">View</p>
+                        <p className="text-[8px] font-bold text-primary-foreground uppercase tracking-widest mb-1">View</p>
                         <p className="text-xs font-medium text-primary-foreground">Details</p>
                     </div>
                 </div>
@@ -86,37 +94,47 @@ function FlipCard({
 const TOTAL_IMAGES = 20;
 const MAX_SCROLL = 3000;
 
-// Unsplash Images
-const IMAGES = [
-    "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=300&q=80",
-    "https://images.unsplash.com/photo-1519710164239-da123dc03ef4?w=300&q=80",
-    "https://images.unsplash.com/photo-1497366216548-37526070297c?w=300&q=80",
-    "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=300&q=80",
-    "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=300&q=80",
-    "https://images.unsplash.com/photo-1506765515384-028b60a970df?w=300&q=80",
-    "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=300&q=80",
-    "https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=300&q=80",
-    "https://images.unsplash.com/photo-1500485035595-cbe6f645feb1?w=300&q=80",
-    "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=300&q=80",
-    "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=300&q=80",
-    "https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?w=300&q=80",
-    "https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?w=300&q=80",
-    "https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?w=300&q=80",
-    "https://images.unsplash.com/photo-1493246507139-91e8fad9978e?w=300&q=80",
-    "https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?w=300&q=80",
-    "https://images.unsplash.com/photo-1483729558449-99ef09a8c325?w=300&q=80",
-    "https://images.unsplash.com/photo-1518173946687-a4c8892bbd9f?w=300&q=80",
-    "https://images.unsplash.com/photo-1523961131990-5ea7c61b2107?w=300&q=80",
-    "https://images.unsplash.com/photo-1496568816309-51d7c20e3b21?w=300&q=80",
+// Default Unsplash Images (AI/Technology themed)
+const DEFAULT_IMAGES = [
+    "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=300&q=80",
+    "https://images.unsplash.com/photo-1555255707-c07966088b7b?w=300&q=80",
+    "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=300&q=80",
+    "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=300&q=80",
+    "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=300&q=80",
+    "https://images.unsplash.com/photo-1555255707-c07966088b7b?w=300&q=80",
+    "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=300&q=80",
+    "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=300&q=80",
+    "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=300&q=80",
+    "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=300&q=80",
+    "https://images.unsplash.com/photo-1555255707-c07966088b7b?w=300&q=80",
+    "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=300&q=80",
+    "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=300&q=80",
+    "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=300&q=80",
+    "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=300&q=80",
+    "https://images.unsplash.com/photo-1555255707-c07966088b7b?w=300&q=80",
+    "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=300&q=80",
+    "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=300&q=80",
+    "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=300&q=80",
+    "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=300&q=80",
 ];
 
 // Helper for linear interpolation
 const lerp = (start: number, end: number, t: number) => start * (1 - t) + end * t;
 
-export default function ScrollMorphHero() {
+export default function ScrollMorphHero({
+    images = DEFAULT_IMAGES,
+    title = "The future is built on AI.",
+    subtitle = "SCROLL TO EXPLORE",
+    className
+}: ScrollMorphHeroProps) {
     const [introPhase, setIntroPhase] = useState<AnimationPhase>("scatter");
     const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
     const containerRef = useRef<HTMLDivElement>(null);
+    const [isMounted, setIsMounted] = useState(false);
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
 
     // --- Container Size ---
     useEffect(() => {
@@ -142,70 +160,97 @@ export default function ScrollMorphHero() {
         return () => observer.disconnect();
     }, []);
 
-    // --- Page Scroll Logic (No scroll capture - responds to page scroll) ---
+    // --- Virtual Scroll Logic ---
     const virtualScroll = useMotionValue(0);
+    const scrollRef = useRef(0);
+    const [isHovering, setIsHovering] = useState(false);
 
     useEffect(() => {
         const container = containerRef.current;
-        if (!container) return;
+        if (!container || !isMounted) return;
 
-        const updateScroll = () => {
-            const rect = container.getBoundingClientRect();
-            const windowHeight = window.innerHeight;
-            
-            // Calculate scroll progress when section is in viewport
-            // Start animating when section enters viewport (top of section reaches 50% of viewport)
-            // End when section bottom leaves viewport
-            const sectionTop = rect.top;
-            const sectionHeight = rect.height;
-            const sectionBottom = sectionTop + sectionHeight;
-            
-            // Slow down factor - makes animation 3x slower
-            const slowDownFactor = 3;
-            
-            // When section enters viewport (from bottom)
-            if (sectionTop < windowHeight * 0.5 && sectionBottom > -sectionHeight * 2) {
-                // Calculate progress: 0 when section top is at 50% viewport, 1 when section bottom is well past top
-                const startPoint = windowHeight * 0.5;
-                const endPoint = -sectionHeight * 2; // Extend end point further down
-                const scrollRange = startPoint - endPoint;
-                const currentProgress = (startPoint - sectionTop) / scrollRange;
-                
-                // Apply slow down factor - progress much slower
-                const slowedProgress = Math.min(1, currentProgress / slowDownFactor);
-                
-                // Map to virtual scroll range (0 to MAX_SCROLL)
-                const virtualScrollValue = Math.max(0, Math.min(MAX_SCROLL, slowedProgress * MAX_SCROLL));
-                virtualScroll.set(virtualScrollValue);
-            } else if (sectionTop >= windowHeight * 0.5) {
-                // Section hasn't entered yet
-                virtualScroll.set(0);
-            } else {
-                // Section has passed
-                virtualScroll.set(MAX_SCROLL);
+        const handleWheel = (e: WheelEvent) => {
+            // Only capture scroll if mouse is actively over the container
+            if (!isHovering) {
+                return; // Allow normal page scroll
             }
+            
+            // Check if we're at boundaries
+            const isAtTop = scrollRef.current <= 0 && e.deltaY < 0;
+            const isAtBottom = scrollRef.current >= MAX_SCROLL && e.deltaY > 0;
+            
+            // If at boundaries, allow normal page scroll
+            if (isAtTop || isAtBottom) {
+                return; // Allow default scroll behavior
+            }
+            
+            // Only prevent default if we're actively controlling the animation
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const newScroll = Math.min(Math.max(scrollRef.current + e.deltaY, 0), MAX_SCROLL);
+            scrollRef.current = newScroll;
+            virtualScroll.set(newScroll);
         };
 
-        // Initial update
-        updateScroll();
+        let touchStartY = 0;
+        let touchStarted = false;
+        
+        const handleTouchStart = (e: TouchEvent) => {
+            touchStarted = true;
+            touchStartY = e.touches[0].clientY;
+        };
+        
+        const handleTouchMove = (e: TouchEvent) => {
+            if (!touchStarted) return;
+            
+            const touchY = e.touches[0].clientY;
+            const deltaY = touchStartY - touchY;
+            touchStartY = touchY;
 
-        // Update on scroll
-        window.addEventListener("scroll", updateScroll, { passive: true });
-        window.addEventListener("resize", updateScroll, { passive: true });
+            const isAtTop = scrollRef.current <= 0 && deltaY < 0;
+            const isAtBottom = scrollRef.current >= MAX_SCROLL && deltaY > 0;
+            
+            if (isAtTop || isAtBottom) {
+                return;
+            }
+            
+            e.preventDefault();
+            const newScroll = Math.min(Math.max(scrollRef.current + deltaY, 0), MAX_SCROLL);
+            scrollRef.current = newScroll;
+            virtualScroll.set(newScroll);
+        };
+        
+        const handleTouchEnd = () => {
+            touchStarted = false;
+        };
+
+        const handleMouseEnter = () => setIsHovering(true);
+        const handleMouseLeave = () => setIsHovering(false);
+
+        container.addEventListener("wheel", handleWheel, { passive: false });
+        container.addEventListener("touchstart", handleTouchStart, { passive: false });
+        container.addEventListener("touchmove", handleTouchMove, { passive: false });
+        container.addEventListener("touchend", handleTouchEnd, { passive: true });
+        container.addEventListener("mouseenter", handleMouseEnter);
+        container.addEventListener("mouseleave", handleMouseLeave);
 
         return () => {
-            window.removeEventListener("scroll", updateScroll);
-            window.removeEventListener("resize", updateScroll);
+            container.removeEventListener("wheel", handleWheel);
+            container.removeEventListener("touchstart", handleTouchStart);
+            container.removeEventListener("touchmove", handleTouchMove);
+            container.removeEventListener("touchend", handleTouchEnd);
+            container.removeEventListener("mouseenter", handleMouseEnter);
+            container.removeEventListener("mouseleave", handleMouseLeave);
         };
-    }, [virtualScroll]);
+    }, [virtualScroll, isMounted, isHovering]);
 
     // Morph Progress: 0 (Circle) -> 1 (Bottom Arc)
-    // Increased range from 600 to 1500 to make morph slower
-    const morphProgress = useTransform(virtualScroll, [0, 1500], [0, 1]);
-    const smoothMorph = useSpring(morphProgress, { stiffness: 30, damping: 25 });
+    const morphProgress = useTransform(virtualScroll, [0, 600], [0, 1]);
+    const smoothMorph = useSpring(morphProgress, { stiffness: 40, damping: 20 });
 
-    // Scroll Rotation (Shuffling) - starts after morph begins
-    const scrollRotate = useTransform(virtualScroll, [1500, 3000], [0, 360]);
+    // Scroll Rotation (Shuffling)
+    const scrollRotate = useTransform(virtualScroll, [600, 3000], [0, 360]);
     const smoothScrollRotate = useSpring(scrollRotate, { stiffness: 40, damping: 20 });
 
     // --- Mouse Parallax ---
@@ -214,7 +259,7 @@ export default function ScrollMorphHero() {
 
     useEffect(() => {
         const container = containerRef.current;
-        if (!container) return;
+        if (!container || !isMounted) return;
 
         const handleMouseMove = (e: MouseEvent) => {
             const rect = container.getBoundingClientRect();
@@ -224,25 +269,37 @@ export default function ScrollMorphHero() {
         };
         container.addEventListener("mousemove", handleMouseMove);
         return () => container.removeEventListener("mousemove", handleMouseMove);
-    }, [mouseX]);
+    }, [mouseX, isMounted]);
 
     // --- Intro Sequence ---
     useEffect(() => {
+        if (!isMounted) return;
         const timer1 = setTimeout(() => setIntroPhase("line"), 500);
         const timer2 = setTimeout(() => setIntroPhase("circle"), 2500);
         return () => { clearTimeout(timer1); clearTimeout(timer2); };
-    }, []);
+    }, [isMounted]);
 
     // --- Random Scatter Positions ---
+    // Only calculate on client to avoid hydration mismatch
     const scatterPositions = useMemo(() => {
-        return IMAGES.map(() => ({
+        if (!isMounted) {
+            // Return placeholder positions for SSR
+            return images.slice(0, TOTAL_IMAGES).map(() => ({
+                x: 0,
+                y: 0,
+                rotation: 0,
+                scale: 0.6,
+                opacity: 0,
+            }));
+        }
+        return images.slice(0, TOTAL_IMAGES).map(() => ({
             x: (Math.random() - 0.5) * 1500,
             y: (Math.random() - 0.5) * 1000,
             rotation: (Math.random() - 0.5) * 180,
             scale: 0.6,
             opacity: 0,
         }));
-    }, []);
+    }, [images, isMounted]);
 
     // --- Render Loop ---
     const [morphValue, setMorphValue] = useState(0);
@@ -250,6 +307,7 @@ export default function ScrollMorphHero() {
     const [parallaxValue, setParallaxValue] = useState(0);
 
     useEffect(() => {
+        if (!isMounted) return;
         const unsubscribeMorph = smoothMorph.on("change", setMorphValue);
         const unsubscribeRotate = smoothScrollRotate.on("change", setRotateValue);
         const unsubscribeParallax = smoothMouseX.on("change", setParallaxValue);
@@ -258,41 +316,48 @@ export default function ScrollMorphHero() {
             unsubscribeRotate();
             unsubscribeParallax();
         };
-    }, [smoothMorph, smoothScrollRotate, smoothMouseX]);
+    }, [smoothMorph, smoothScrollRotate, smoothMouseX, isMounted]);
 
     // --- Content Opacity ---
     const contentOpacity = useTransform(smoothMorph, [0.8, 1], [0, 1]);
     const contentY = useTransform(smoothMorph, [0.8, 1], [20, 0]);
 
+    if (!isMounted) {
+        return (
+            <div ref={containerRef} className={cn("relative w-full h-full bg-background overflow-visible", className)}>
+                <div className="flex h-full w-full items-center justify-center">
+                    <div className="text-center">
+                        <h1 className="text-2xl md:text-4xl font-medium tracking-tight text-foreground">
+                            {title}
+                        </h1>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
     return (
-        <div 
-            ref={containerRef} 
-            className="relative w-full h-[800px] bg-background overflow-hidden"
-        >
+        <div ref={containerRef} className={cn("relative w-full h-full bg-background overflow-visible", className)}>
+            {/* Container */}
             <div className="flex h-full w-full flex-col items-center justify-center perspective-1000">
+
                 {/* Intro Text (Fades out) */}
                 <div className="absolute z-0 flex flex-col items-center justify-center text-center pointer-events-none top-1/2 -translate-y-1/2">
                     <motion.h1
                         initial={{ opacity: 0, y: 20, filter: "blur(10px)" }}
-                        animate={introPhase === "circle" && morphValue < 0.25 ? { 
-                            opacity: Math.max(0, 1 - (morphValue * 4)), 
-                            y: 0, 
-                            filter: "blur(0px)" 
-                        } : { opacity: 0, filter: "blur(10px)" }}
-                        transition={{ duration: 1.5 }}
-                        className="text-2xl font-medium tracking-tight text-foreground md:text-4xl"
+                        animate={introPhase === "circle" && morphValue < 0.5 ? { opacity: 1 - morphValue * 2, y: 0, filter: "blur(0px)" } : { opacity: 0, filter: "blur(10px)" }}
+                        transition={{ duration: 1 }}
+                        className="text-2xl md:text-4xl font-medium tracking-tight text-foreground"
                     >
-                        The future is built on AI.
+                        {title}
                     </motion.h1>
                     <motion.p
                         initial={{ opacity: 0 }}
-                        animate={introPhase === "circle" && morphValue < 0.25 ? { 
-                            opacity: Math.max(0, 0.7 - (morphValue * 2.8)) 
-                        } : { opacity: 0 }}
-                        transition={{ duration: 1.5, delay: 0.2 }}
+                        animate={introPhase === "circle" && morphValue < 0.5 ? { opacity: 0.5 - morphValue } : { opacity: 0 }}
+                        transition={{ duration: 1, delay: 0.2 }}
                         className="mt-4 text-xs font-bold tracking-[0.2em] text-muted-foreground"
                     >
-                        SCROLL TO EXPLORE
+                        {subtitle}
                     </motion.p>
                 </div>
 
@@ -312,7 +377,7 @@ export default function ScrollMorphHero() {
 
                 {/* Main Container */}
                 <div className="relative flex items-center justify-center w-full h-full">
-                    {IMAGES.slice(0, TOTAL_IMAGES).map((src, i) => {
+                    {images.slice(0, TOTAL_IMAGES).map((src, i) => {
                         let target = { x: 0, y: 0, rotation: 0, scale: 1, opacity: 1 };
 
                         if (introPhase === "scatter") {
@@ -323,11 +388,9 @@ export default function ScrollMorphHero() {
                             const lineX = i * lineSpacing - lineTotalWidth / 2;
                             target = { x: lineX, y: 0, rotation: 0, scale: 1, opacity: 1 };
                         } else {
-                            // Circle Phase & Morph Logic
                             const isMobile = containerSize.width < 768;
                             const minDimension = Math.min(containerSize.width, containerSize.height);
 
-                            // Calculate Circle Position
                             const circleRadius = Math.min(minDimension * 0.35, 350);
                             const circleAngle = (i / TOTAL_IMAGES) * 360;
                             const circleRad = (circleAngle * Math.PI) / 180;
@@ -337,7 +400,6 @@ export default function ScrollMorphHero() {
                                 rotation: circleAngle + 90,
                             };
 
-                            // Calculate Bottom Arc Position
                             const baseRadius = Math.min(containerSize.width, containerSize.height * 1.5);
                             const arcRadius = baseRadius * (isMobile ? 1.4 : 1.1);
                             const arcApexY = containerSize.height * (isMobile ? 0.35 : 0.25);
@@ -360,7 +422,6 @@ export default function ScrollMorphHero() {
                                 scale: isMobile ? 1.4 : 1.8,
                             };
 
-                            // Interpolate (Morph)
                             target = {
                                 x: lerp(circlePos.x, arcPos.x, morphValue),
                                 y: lerp(circlePos.y, arcPos.y, morphValue),

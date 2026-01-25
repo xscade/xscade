@@ -7,26 +7,34 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
-// All Xscade services
-const allServices = [
-  "AI Services",
-  "Blockchain",
-  "Cloud",
-  "Data Services",
-  "DevOps",
-  "Enterprise Application",
-  "Enterprise Data",
-  "Generative AI",
-  "Insurance Tech",
-  "Intelligent Automation",
-  "IT Staffing",
-  "Low Code Development",
-  "Mobile App Development",
-  "Monday Consulting",
-  "Software Engineering",
-  "QA & Testing",
-  "Salesforce",
-  "Virtual CTO",
+// Service interface with href
+interface Service {
+  name: string;
+  href: string;
+}
+
+// All Xscade services - reordered with Digital Marketing, Software Engineering, and AI Development first
+const allServices: Service[] = [
+  { name: "Digital Marketing", href: "/services/digital-marketing" },
+  { name: "Software Engineering", href: "/services/software-development" },
+  { name: "AI Development", href: "/services/ai-development" },
+  { name: "Consulting", href: "/services/consulting" },
+  { name: "Blockchain", href: "/services" },
+  { name: "Cloud", href: "/services" },
+  { name: "Data Services", href: "/services" },
+  { name: "DevOps", href: "/services" },
+  { name: "Enterprise Application", href: "/services" },
+  { name: "Enterprise Data", href: "/services" },
+  { name: "Generative AI", href: "/services" },
+  { name: "Insurance Tech", href: "/services" },
+  { name: "Intelligent Automation", href: "/services" },
+  { name: "IT Staffing", href: "/services" },
+  { name: "Low Code Development", href: "/services" },
+  { name: "Mobile App Development", href: "/services" },
+  { name: "Monday Consulting", href: "/services" },
+  { name: "QA & Testing", href: "/services" },
+  { name: "Salesforce", href: "/services" },
+  { name: "Virtual CTO", href: "/services" },
 ];
 
 export default function ServicesPage() {
@@ -78,18 +86,28 @@ export default function ServicesPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
             {allServices.map((service, index) => (
               <motion.div
-                key={service}
+                key={service.name}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: index * 0.03 }}
                 className="group"
               >
-                <div className="bg-card rounded-2xl border border-border p-6 transition-all duration-300 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/10 hover:bg-primary/5 cursor-pointer">
-                  <h3 className="text-lg font-semibold text-foreground tracking-tight group-hover:text-primary transition-colors">
-                    {service}
-                  </h3>
-                </div>
+                <Link href={service.href} className="block h-full">
+                  <div className="bg-card rounded-2xl border border-border p-6 transition-all duration-300 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/10 hover:bg-primary/5 cursor-pointer h-full flex flex-col">
+                    <h3 className="text-lg font-semibold text-foreground tracking-tight group-hover:text-primary transition-colors mb-4">
+                      {service.name}
+                    </h3>
+                    <div className="mt-auto">
+                      <div 
+                        className="w-full rounded-full border border-primary/20 hover:border-primary/40 hover:bg-primary/5 text-foreground group-hover:text-primary transition-all px-4 py-2 text-sm font-medium flex items-center justify-center gap-2"
+                      >
+                        Get Started
+                        <ArrowRight className="w-4 h-4" />
+                      </div>
+                    </div>
+                  </div>
+                </Link>
               </motion.div>
             ))}
           </div>

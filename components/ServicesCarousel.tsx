@@ -2,8 +2,9 @@
 
 import { useState, useRef, useEffect } from "react";
 import { motion, PanInfo } from "framer-motion";
-import { ChevronLeft, ChevronRight, CheckCircle2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, CheckCircle2, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import {
   Sparkles,
   Blocks,
@@ -27,119 +28,140 @@ import {
 } from "lucide-react";
 
 const services = [
+  // Priority services first: Software Engineering, Digital Marketing, AI Services
+  {
+    name: "Software Engineering",
+    icon: Wrench,
+    description: "Full-stack software engineering services from architecture design to implementation and maintenance.",
+    features: ["System Architecture", "Full-Stack Development", "Code Review", "Technical Consulting"],
+    href: "/services/software-development"
+  },
   {
     name: "Digital Marketing",
     icon: Megaphone,
     description: "Comprehensive digital marketing services including SEO, PPC, social media marketing, content strategy, and brand development to grow your online presence.",
-    features: ["SEO Optimization", "PPC Campaigns", "Social Media Management", "Content Marketing"]
+    features: ["SEO Optimization", "PPC Campaigns", "Social Media Management", "Content Marketing"],
+    href: "/services/digital-marketing"
   },
   {
     name: "AI Services",
     icon: Sparkles,
     description: "Comprehensive AI solutions including machine learning, natural language processing, and computer vision to transform your business operations.",
-    features: ["Machine Learning Models", "NLP Solutions", "Computer Vision", "AI Strategy Consulting"]
+    features: ["Machine Learning Models", "NLP Solutions", "Computer Vision", "AI Strategy Consulting"],
+    href: "/services/ai-development"
+  },
+  // Rest of the services
+  {
+    name: "Consulting",
+    icon: Briefcase,
+    description: "Strategic business consulting services to help you make informed decisions, optimize operations, and achieve sustainable growth.",
+    features: ["Strategy Consulting", "Digital Transformation", "Operations Optimization", "Growth Planning"],
+    href: "/services/consulting"
   },
   {
     name: "Blockchain",
     icon: Blocks,
     description: "Blockchain development and consulting services for decentralized applications, smart contracts, and cryptocurrency solutions.",
-    features: ["Smart Contracts", "DApp Development", "Blockchain Consulting", "Cryptocurrency Solutions"]
+    features: ["Smart Contracts", "DApp Development", "Blockchain Consulting", "Cryptocurrency Solutions"],
+    href: "/services"
   },
   {
     name: "Cloud",
     icon: Cloud,
     description: "Cloud infrastructure, migration, and management services across AWS, Azure, and GCP to scale your business.",
-    features: ["Cloud Migration", "Infrastructure Setup", "DevOps on Cloud", "Cost Optimization"]
+    features: ["Cloud Migration", "Infrastructure Setup", "DevOps on Cloud", "Cost Optimization"],
+    href: "/services"
   },
   {
     name: "Data Services",
     icon: Database,
     description: "Data engineering, analytics, and management services to unlock insights from your data and drive decision-making.",
-    features: ["Data Engineering", "Analytics & BI", "Data Warehousing", "ETL Pipelines"]
+    features: ["Data Engineering", "Analytics & BI", "Data Warehousing", "ETL Pipelines"],
+    href: "/services"
   },
   {
     name: "DevOps",
     icon: Settings,
     description: "DevOps practices, CI/CD pipelines, and infrastructure automation to accelerate development and deployment cycles.",
-    features: ["CI/CD Pipelines", "Infrastructure as Code", "Container Orchestration", "Monitoring & Logging"]
-  },
-  {
-    name: "Enterprise Application",
-    icon: Building2,
-    description: "Custom enterprise applications tailored to your business needs, from ERP systems to workflow automation.",
-    features: ["Custom ERP Systems", "Workflow Automation", "Integration Services", "Legacy Modernization"]
-  },
-  {
-    name: "Enterprise Data",
-    icon: FileStack,
-    description: "Enterprise data management, governance, and analytics solutions for large-scale organizations.",
-    features: ["Data Governance", "Master Data Management", "Data Quality", "Compliance & Security"]
+    features: ["CI/CD Pipelines", "Infrastructure as Code", "Container Orchestration", "Monitoring & Logging"],
+    href: "/services"
   },
   {
     name: "Generative AI",
     icon: Brain,
     description: "Cutting-edge generative AI solutions including LLM integration, content generation, and AI-powered applications.",
-    features: ["LLM Integration", "Content Generation", "AI Chatbots", "Custom AI Models"]
+    features: ["LLM Integration", "Content Generation", "AI Chatbots", "Custom AI Models"],
+    href: "/services/ai-development"
+  },
+  {
+    name: "Enterprise Application",
+    icon: Building2,
+    description: "Custom enterprise applications tailored to your business needs, from ERP systems to workflow automation.",
+    features: ["Custom ERP Systems", "Workflow Automation", "Integration Services", "Legacy Modernization"],
+    href: "/services"
+  },
+  {
+    name: "Enterprise Data",
+    icon: FileStack,
+    description: "Enterprise data management, governance, and analytics solutions for large-scale organizations.",
+    features: ["Data Governance", "Master Data Management", "Data Quality", "Compliance & Security"],
+    href: "/services"
   },
   {
     name: "Insurance Tech",
     icon: Shield,
     description: "Technology solutions specifically designed for the insurance industry, from claims processing to risk assessment.",
-    features: ["Claims Processing", "Risk Assessment", "Policy Management", "Digital Transformation"]
+    features: ["Claims Processing", "Risk Assessment", "Policy Management", "Digital Transformation"],
+    href: "/services"
   },
   {
     name: "Intelligent Automation",
     icon: Zap,
     description: "RPA and intelligent automation solutions to streamline business processes and reduce manual work.",
-    features: ["RPA Implementation", "Process Automation", "Workflow Optimization", "AI-Powered Automation"]
+    features: ["RPA Implementation", "Process Automation", "Workflow Optimization", "AI-Powered Automation"],
+    href: "/services"
   },
   {
     name: "IT Staffing",
     icon: Users,
     description: "Access to top-tier IT talent for your projects, from developers to architects and technical leads.",
-    features: ["Technical Recruiting", "Contract Staffing", "Permanent Placement", "Talent Assessment"]
+    features: ["Technical Recruiting", "Contract Staffing", "Permanent Placement", "Talent Assessment"],
+    href: "/services"
   },
   {
     name: "Low Code Development",
     icon: Code,
     description: "Rapid application development using low-code and no-code platforms to accelerate time-to-market.",
-    features: ["Platform Selection", "Custom Development", "Integration Services", "Training & Support"]
+    features: ["Platform Selection", "Custom Development", "Integration Services", "Training & Support"],
+    href: "/services"
   },
   {
     name: "Mobile App Development",
     icon: Smartphone,
     description: "Native and cross-platform mobile applications for iOS and Android with modern UI/UX design.",
-    features: ["iOS Development", "Android Development", "Cross-Platform Apps", "App Maintenance"]
+    features: ["iOS Development", "Android Development", "Cross-Platform Apps", "App Maintenance"],
+    href: "/services"
   },
   {
     name: "Monday Consulting",
     icon: Calendar,
     description: "Expert consulting services for Monday.com implementation, customization, and workflow optimization.",
-    features: ["Platform Setup", "Workflow Design", "Integration Services", "Training & Support"]
-  },
-  {
-    name: "Software Engineering",
-    icon: Wrench,
-    description: "Full-stack software engineering services from architecture design to implementation and maintenance.",
-    features: ["System Architecture", "Full-Stack Development", "Code Review", "Technical Consulting"]
+    features: ["Platform Setup", "Workflow Design", "Integration Services", "Training & Support"],
+    href: "/services"
   },
   {
     name: "QA & Testing",
     icon: TestTube,
     description: "Comprehensive quality assurance and testing services to ensure your software meets the highest standards.",
-    features: ["Test Automation", "Manual Testing", "Performance Testing", "Security Testing"]
-  },
-  {
-    name: "Salesforce",
-    icon: Briefcase,
-    description: "Salesforce implementation, customization, and consulting services to maximize your CRM investment.",
-    features: ["Salesforce Setup", "Custom Development", "Integration Services", "Admin Training"]
+    features: ["Test Automation", "Manual Testing", "Performance Testing", "Security Testing"],
+    href: "/services"
   },
   {
     name: "Virtual CTO",
     icon: UserCog,
     description: "Strategic technology leadership on-demand to guide your technical decisions and architecture.",
-    features: ["Technology Strategy", "Architecture Review", "Team Leadership", "Technical Advisory"]
+    features: ["Technology Strategy", "Architecture Review", "Team Leadership", "Technical Advisory"],
+    href: "/services"
   },
 ];
 
@@ -352,7 +374,7 @@ export function ServicesCarousel() {
                     }
                   }}
                 >
-                  <div className={`h-full bg-white/10 backdrop-blur-sm rounded-3xl border border-white/10 transition-all duration-500 ${
+                  <div className={`h-full bg-white/10 backdrop-blur-sm rounded-3xl border border-white/10 transition-all duration-500 flex flex-col ${
                     visible ? 'hover:bg-white/20 hover:shadow-2xl hover:shadow-blue-900/20' : ''
                   } ${
                     isMobile ? 'p-6' : 'p-10'
@@ -379,7 +401,7 @@ export function ServicesCarousel() {
                     </p>
 
                     {/* Features List */}
-                    <ul className={`space-y-3 ${isMobile ? 'space-y-2' : ''}`}>
+                    <ul className={`space-y-3 mb-6 ${isMobile ? 'space-y-2' : ''}`}>
                       {service.features.map((feature, i) => (
                         <li key={feature} className="flex items-center gap-3">
                           <div className={`rounded-full bg-white/20 flex items-center justify-center flex-shrink-0 ${
@@ -393,6 +415,16 @@ export function ServicesCarousel() {
                         </li>
                       ))}
                     </ul>
+
+                    {/* Get Started CTA Button */}
+                    <div className="mt-auto">
+                      <Link href={service.href}>
+                        <Button className="w-full rounded-full bg-white/10 hover:bg-white/20 text-white border border-white/20 hover:border-white/30 transition-all duration-300 backdrop-blur-sm">
+                          Get Started
+                          <ArrowRight className="ml-2 w-4 h-4" />
+                        </Button>
+                      </Link>
+                    </div>
                   </div>
                 </motion.div>
               );

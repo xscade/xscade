@@ -1,92 +1,83 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
 import { Footer } from "@/components/Footer";
 import { Navbar } from "@/components/Navbar";
 import { SplineScene } from "@/components/SplineScene";
 import { TestimonialsSection } from "@/components/ui/testimonial-v2";
 import { ZoomParallax } from "@/components/ui/zoom-parallax";
+import ScrollMorphHero from "@/components/ui/scroll-morph-hero";
 import { motion, PanInfo } from "framer-motion";
-import Link from "next/link";
+import { useState, useRef, useEffect } from "react";
 import { 
-  Search, 
-  TrendingUp, 
-  Share2, 
-  FileText,
-  BarChart3,
-  Target,
+  Brain,
+  Sparkles,
+  Bot,
+  Cpu,
+  Network,
+  Code,
+  Database,
+  Zap,
   CheckCircle2,
   ArrowRight,
-  Zap,
-  Users,
-  Award,
-  Users2,
-  Palette,
-  MousePointerClick,
-  Facebook,
-  TrendingDown,
-  Instagram,
-  Layout,
   ChevronLeft,
   ChevronRight
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
-// Digital Marketing Services
-const digitalMarketingServices = [
+// AI Development Services
+const aiServices = [
   {
-    name: "Lead Generation",
-    icon: Users2,
-    description: "Generate high-quality leads through targeted campaigns and strategic marketing funnels that convert prospects into customers.",
-    features: ["Lead Capture Forms", "Landing Page Optimization", "Email Marketing", "Lead Nurturing"]
+    name: "Machine Learning",
+    icon: Brain,
+    description: "Build intelligent systems with advanced machine learning models that learn from data and improve over time.",
+    features: ["Custom ML Models", "Model Training", "Data Preprocessing", "Model Deployment"]
   },
   {
-    name: "Branding",
-    icon: Palette,
-    description: "Develop a strong brand identity that resonates with your audience and sets you apart from competitors.",
-    features: ["Brand Strategy", "Logo Design", "Brand Guidelines", "Visual Identity"]
+    name: "AI Strategy",
+    icon: Sparkles,
+    description: "Develop comprehensive AI strategies that align with your business goals and drive innovation.",
+    features: ["AI Roadmap", "Use Case Analysis", "ROI Assessment", "Implementation Planning"]
   },
   {
-    name: "Google Ads",
-    icon: MousePointerClick,
-    description: "Maximize your ROI with strategic Google Ads campaigns that drive qualified traffic and conversions.",
-    features: ["Search Campaigns", "Display Advertising", "Shopping Ads", "Performance Optimization"]
+    name: "Chatbots & NLP",
+    icon: Bot,
+    description: "Create intelligent conversational AI solutions with natural language processing capabilities.",
+    features: ["Chatbot Development", "NLP Integration", "Voice Assistants", "Sentiment Analysis"]
   },
   {
-    name: "Meta Ads",
-    icon: Facebook,
-    description: "Reach your target audience on Facebook and Instagram with highly targeted and optimized ad campaigns.",
-    features: ["Facebook Ads", "Instagram Ads", "Audience Targeting", "Ad Creative Design"]
+    name: "Computer Vision",
+    icon: Cpu,
+    description: "Implement computer vision solutions for image recognition, object detection, and visual analytics.",
+    features: ["Image Recognition", "Object Detection", "Video Analysis", "Visual Search"]
   },
   {
-    name: "Performance Marketing",
-    icon: TrendingDown,
-    description: "Data-driven marketing strategies focused on measurable results and ROI optimization across all channels.",
-    features: ["Conversion Tracking", "A/B Testing", "ROI Optimization", "Analytics & Reporting"]
+    name: "AI Integration",
+    icon: Network,
+    description: "Seamlessly integrate AI capabilities into your existing systems and workflows.",
+    features: ["API Integration", "System Integration", "Workflow Automation", "Legacy Modernization"]
   },
   {
-    name: "Social Media Management",
-    icon: Share2,
-    description: "Comprehensive social media management to build your brand presence and engage with your audience.",
-    features: ["Content Planning", "Community Management", "Social Listening", "Crisis Management"]
+    name: "LLM Development",
+    icon: Code,
+    description: "Develop and deploy large language models for content generation, analysis, and automation.",
+    features: ["Custom LLMs", "Fine-tuning", "Prompt Engineering", "RAG Systems"]
   },
   {
-    name: "Social Media Marketing",
-    icon: Instagram,
-    description: "Strategic social media marketing campaigns that drive engagement, followers, and business growth.",
-    features: ["Campaign Strategy", "Content Creation", "Influencer Partnerships", "Paid Social Ads"]
+    name: "AI Analytics",
+    icon: Database,
+    description: "Leverage AI-powered analytics to extract insights and make data-driven decisions.",
+    features: ["Predictive Analytics", "Pattern Recognition", "Anomaly Detection", "Business Intelligence"]
   },
   {
-    name: "Web Design",
-    icon: Layout,
-    description: "Create stunning, user-friendly websites that convert visitors into customers and reflect your brand.",
-    features: ["Responsive Design", "UI/UX Design", "E-commerce Solutions", "Website Optimization"]
+    name: "AI Automation",
+    icon: Zap,
+    description: "Automate business processes with intelligent AI systems that reduce manual work.",
+    features: ["Process Automation", "Intelligent Workflows", "Decision Automation", "Task Optimization"]
   },
 ];
 
-
-// Digital Marketing Services Carousel Component
-function DigitalMarketingServicesCarousel() {
+// AI Development Services Carousel Component
+function AIServicesCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const [cardWidth, setCardWidth] = useState(0);
@@ -150,7 +141,7 @@ function DigitalMarketingServicesCarousel() {
 
   const goToNext = () => {
     setCurrentIndex((prev) => {
-      if (prev >= digitalMarketingServices.length - cardsPerView) {
+      if (prev >= aiServices.length - cardsPerView) {
         return 0;
       }
       return prev + 1;
@@ -160,14 +151,14 @@ function DigitalMarketingServicesCarousel() {
   const goToPrevious = () => {
     setCurrentIndex((prev) => {
       if (prev <= 0) {
-        return digitalMarketingServices.length - cardsPerView;
+        return aiServices.length - cardsPerView;
       }
       return prev - 1;
     });
   };
 
   const goToIndex = (index: number) => {
-    const maxIndex = Math.max(0, digitalMarketingServices.length - cardsPerView);
+    const maxIndex = Math.max(0, aiServices.length - cardsPerView);
     setCurrentIndex(Math.min(index, maxIndex));
   };
 
@@ -251,7 +242,7 @@ function DigitalMarketingServicesCarousel() {
               ease: [0.16, 1, 0.3, 1],
             }}
           >
-            {digitalMarketingServices.map((service, index) => {
+            {aiServices.map((service, index) => {
               const visible = isCardVisible(index);
               return (
                 <motion.div
@@ -279,7 +270,7 @@ function DigitalMarketingServicesCarousel() {
                     }
                   }}
                 >
-                  <div className={`h-full bg-white/10 backdrop-blur-sm rounded-3xl border border-white/10 transition-all duration-500 flex flex-col ${
+                  <div className={`h-full bg-white/10 backdrop-blur-sm rounded-3xl border border-white/10 transition-all duration-500 ${
                     visible ? 'hover:bg-white/20 hover:shadow-2xl hover:shadow-blue-900/20' : ''
                   } ${
                     isMobile ? 'p-6' : 'p-10'
@@ -302,7 +293,7 @@ function DigitalMarketingServicesCarousel() {
                       {service.description}
                     </p>
 
-                    <ul className={`space-y-3 mb-6 ${isMobile ? 'space-y-2' : ''}`}>
+                    <ul className={`space-y-3 ${isMobile ? 'space-y-2' : ''}`}>
                       {service.features.map((feature, i) => (
                         <li key={feature} className="flex items-center gap-3">
                           <div className={`rounded-full bg-white/20 flex items-center justify-center flex-shrink-0 ${
@@ -316,15 +307,6 @@ function DigitalMarketingServicesCarousel() {
                         </li>
                       ))}
                     </ul>
-
-                    <div className="mt-auto">
-                      <Link href="/contact">
-                        <Button className="w-full rounded-full bg-white/10 hover:bg-white/20 text-white border border-white/20 hover:border-white/30 transition-all duration-300 backdrop-blur-sm">
-                          Get Started
-                          <ArrowRight className="ml-2 w-4 h-4" />
-                        </Button>
-                      </Link>
-                    </div>
                   </div>
                 </motion.div>
               );
@@ -356,7 +338,7 @@ function DigitalMarketingServicesCarousel() {
       )}
 
       <div className="flex items-center justify-center gap-2 flex-wrap mt-8">
-        {digitalMarketingServices.map((_, index) => {
+        {aiServices.map((_, index) => {
           const isVisible = index >= currentIndex && index < currentIndex + cardsPerView;
           const isActive = index === currentIndex;
           return (
@@ -385,8 +367,8 @@ function DigitalMarketingServicesCarousel() {
       <div className="text-center mt-6">
         <span className={`text-white/70 ${isMobile ? 'text-xs' : 'text-sm'}`}>
           {isMobile 
-            ? `${currentIndex + 1} of ${digitalMarketingServices.length}`
-            : `${currentIndex + 1}-${Math.min(currentIndex + cardsPerView, digitalMarketingServices.length)} of ${digitalMarketingServices.length}`
+            ? `${currentIndex + 1} of ${aiServices.length}`
+            : `${currentIndex + 1}-${Math.min(currentIndex + cardsPerView, aiServices.length)} of ${aiServices.length}`
           }
         </span>
         {isMobile && (
@@ -397,276 +379,42 @@ function DigitalMarketingServicesCarousel() {
   );
 }
 
-export default function DigitalMarketingPage() {
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  const programs = [
-    {
-      image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=500&fit=crop&q=80",
-      category: "LEAD GENERATION",
-      title: "Generate Quality Leads",
-      href: "/contact",
-    },
-    {
-      image: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=500&fit=crop&q=80",
-      category: "GOOGLE ADS",
-      title: "Maximize Your ROI",
-      href: "/contact",
-    },
-    {
-      image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=500&fit=crop&q=80",
-      category: "SOCIAL MEDIA",
-      title: "Build Your Brand",
-      href: "/contact",
-    },
-    {
-      image: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=400&h=500&fit=crop&q=80",
-      category: "PERFORMANCE",
-      title: "Data-Driven Results",
-      href: "/contact",
-    },
-    {
-      image: "https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=400&h=500&fit=crop&q=80",
-      category: "WEB DESIGN",
-      title: "Stunning Websites",
-      href: "/contact",
-    },
-  ];
-
+export default function AIDevelopmentPage() {
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
       
       {/* Hero Section */}
-      <section
-        className="relative w-full min-h-screen flex flex-col overflow-hidden pt-16"
-        style={{
-          background: "linear-gradient(180deg, hsl(var(--primary)/0.1) 0%, hsl(var(--primary)/0.05) 50%, hsl(var(--background)) 100%)",
-        }}
-      >
-        {/* Main Content */}
-        <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-4 pt-32 pb-20">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="flex flex-col items-center text-center max-w-4xl space-y-8"
-          >
-            {/* Title */}
-            <h1 className="text-5xl md:text-7xl font-bold tracking-tight text-foreground">
-              Drive Growth with Digital Marketing Excellence
-            </h1>
-
-            {/* Subtitle */}
-            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl leading-relaxed">
-              We deliver cutting-edge digital marketing strategies that drive growth, engagement, and measurable results for your business. Transform your online presence today.
-            </p>
-
-            {/* Action Buttons */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-              className="flex flex-col sm:flex-row items-center gap-4"
-            >
-              <Link
-                href="/contact"
-                className="inline-flex items-center gap-2 rounded-full px-8 h-12 text-base font-medium text-white shadow-lg shadow-primary/20 transition-all hover:scale-105"
-                style={{
-                  background: "hsl(var(--primary))",
-                }}
-              >
-                Get Started
-                <ArrowRight className="w-4 h-4" />
-              </Link>
-
-              <Link
-                href="/services"
-                className="inline-flex items-center rounded-full px-8 h-12 text-base font-medium hover:bg-muted transition-all hover:scale-105"
-                style={{
-                  background: "transparent",
-                  border: "1px solid hsl(var(--border))",
-                  color: "hsl(var(--foreground))",
-                }}
-              >
-                Our Services
-              </Link>
-            </motion.div>
-
-            {/* Disclaimer */}
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.6 }}
-              className="text-sm font-normal italic"
-              style={{
-                color: "hsl(var(--muted-foreground))",
-              }}
-            >
-              *Free consultation available
-            </motion.p>
-
-            {/* Social Proof */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.7 }}
-              className="flex flex-row items-center gap-3"
-            >
-              <div className="flex flex-row -space-x-2">
-                {[
-                  "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&q=80",
-                  "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&q=80",
-                  "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&q=80",
-                  "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&q=80",
-                ].map((avatar, index) => (
-                  <img
-                    key={index}
-                    src={avatar}
-                    alt={`User ${index + 1}`}
-                    className="rounded-full border-2 border-white"
-                    style={{
-                      width: "40px",
-                      height: "40px",
-                      objectFit: "cover",
-                    }}
-                  />
-                ))}
-              </div>
-              <span
-                className="text-sm font-medium"
-                style={{
-                  color: "hsl(var(--muted-foreground))",
-                }}
-              >
-                Join over 500+ satisfied clients
-              </span>
-            </motion.div>
-          </motion.div>
-        </div>
-
-        {/* Program Cards Carousel */}
-        {isMounted && (
-          <motion.div
-            initial={{ opacity: 0, y: 100 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.8 }}
-            className="relative z-10 w-full overflow-hidden"
-            style={{
-              paddingTop: "60px",
-              paddingBottom: "60px",
-            }}
-          >
-            {/* Gradient Overlays */}
-            <div
-              className="absolute left-0 top-0 bottom-0 z-10 pointer-events-none"
-              style={{
-                width: "150px",
-                background: "linear-gradient(90deg, hsl(var(--background)) 0%, rgba(255, 255, 255, 0) 100%)",
-              }}
-            />
-            <div
-              className="absolute right-0 top-0 bottom-0 z-10 pointer-events-none"
-              style={{
-                width: "150px",
-                background: "linear-gradient(270deg, hsl(var(--background)) 0%, rgba(255, 255, 255, 0) 100%)",
-              }}
-            />
-
-            {/* Scrolling Container */}
-            <motion.div
-              className="flex items-center"
-              animate={isMounted ? {
-                x: [0, -((programs.length * 380) / 2)],
-              } : {}}
-              transition={{
-                x: {
-                  repeat: Infinity,
-                  repeatType: "loop",
-                  duration: programs.length * 3,
-                  ease: "linear",
-                },
-              }}
-              style={{
-                gap: "24px",
-                paddingLeft: "24px",
-              }}
-            >
-              {/* Duplicate programs for seamless loop */}
-              {[...programs, ...programs].map((program, index) => {
-                const cardContent = (
-                  <motion.div
-                    whileHover={{ scale: 1.05, y: -10 }}
-                    transition={{ duration: 0.3 }}
-                    className="flex-shrink-0 cursor-pointer relative overflow-hidden"
-                    style={{
-                      width: "356px",
-                      height: "480px",
-                      borderRadius: "24px",
-                      boxShadow: "0 8px 32px rgba(0, 0, 0, 0.12)",
-                    }}
-                  >
-                    {/* Image */}
-                    <img
-                      src={program.image}
-                      alt={program.title}
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
-                      }}
-                    />
-
-                    {/* Gradient Overlay */}
-                    <div
-                      className="absolute inset-0"
-                      style={{
-                        background: "linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.7) 100%)",
-                      }}
-                    />
-
-                    {/* Text Content */}
-                    <div
-                      className="absolute bottom-0 left-0 right-0 p-6"
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: "8px",
-                      }}
-                    >
-                      <span
-                        className="text-xs font-medium uppercase tracking-wider"
-                        style={{
-                          color: "rgba(255, 255, 255, 0.8)",
-                          letterSpacing: "0.1em",
-                        }}
-                      >
-                        {program.category}
-                      </span>
-                      <h3 className="text-2xl font-semibold text-white leading-tight">
-                        {program.title}
-                      </h3>
-                    </div>
-                  </motion.div>
-                );
-
-                return program.href ? (
-                  <Link key={index} href={program.href}>
-                    {cardContent}
-                  </Link>
-                ) : (
-                  <React.Fragment key={index}>{cardContent}</React.Fragment>
-                );
-              })}
-            </motion.div>
-          </motion.div>
-        )}
+      <section className="relative w-full h-screen overflow-visible">
+        <ScrollMorphHero
+          title="The future is built on AI."
+          subtitle="SCROLL TO EXPLORE"
+          className="h-screen"
+          images={[
+            "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=300&q=80",
+            "https://images.unsplash.com/photo-1555255707-c07966088b7b?w=300&q=80",
+            "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=300&q=80",
+            "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=300&q=80",
+            "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=300&q=80",
+            "https://images.unsplash.com/photo-1555255707-c07966088b7b?w=300&q=80",
+            "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=300&q=80",
+            "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=300&q=80",
+            "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=300&q=80",
+            "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=300&q=80",
+            "https://images.unsplash.com/photo-1555255707-c07966088b7b?w=300&q=80",
+            "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=300&q=80",
+            "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=300&q=80",
+            "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=300&q=80",
+            "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=300&q=80",
+            "https://images.unsplash.com/photo-1555255707-c07966088b7b?w=300&q=80",
+            "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=300&q=80",
+            "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=300&q=80",
+            "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=300&q=80",
+            "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=300&q=80",
+          ]}
+        />
       </section>
-      
+
       {/* Services Section */}
       <section className="relative w-full bg-gradient-to-b from-blue-700 via-blue-600 to-blue-500 text-white overflow-hidden">
         {/* Background Pattern */}
@@ -687,18 +435,18 @@ export default function DigitalMarketingPage() {
                 Our Services
               </span>
               <h2 className="text-3xl md:text-4xl lg:text-6xl font-bold tracking-tight text-white leading-tight">
-                Digital Marketing Services<br className="hidden md:block" />for Your Business
+                AI Development Services<br className="hidden md:block" />for Your Business
               </h2>
             </div>
             <div className="flex flex-col items-start gap-4 md:items-end md:max-w-sm">
               <p className="text-sm md:text-base text-white/80 leading-relaxed">
-                Comprehensive solutions to grow your online presence and drive business success.
+                Comprehensive AI solutions to transform your business with intelligent automation and insights.
               </p>
             </div>
           </motion.div>
 
-          {/* Digital Marketing Services Carousel */}
-          <DigitalMarketingServicesCarousel />
+          {/* AI Services Carousel */}
+          <AIServicesCarousel />
         </div>
       </section>
 
@@ -759,12 +507,12 @@ export default function DigitalMarketingPage() {
                 CORE FEATURES
               </span>
               <h2 className="text-4xl font-bold tracking-tight md:text-6xl text-white leading-tight">
-                Why Choose Our Digital Marketing
+                Why Choose Our AI Solutions
               </h2>
             </div>
             <div className="flex flex-col items-start gap-4 md:items-end md:max-w-sm">
             <p className="text-base text-white/80 leading-relaxed">
-              We combine expertise, innovation, and dedication to deliver exceptional digital marketing results.
+              We combine cutting-edge AI technology with business expertise to deliver intelligent solutions that drive results.
             </p>
             </div>
           </motion.div>
@@ -773,40 +521,40 @@ export default function DigitalMarketingPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {[
               {
-                icon: Search,
-                title: "SEO OPTIMIZATION",
-                description: "Improve your search engine rankings and drive organic traffic with our proven SEO strategies and techniques.",
-                tag: "VISIBILITY"
+                icon: Brain,
+                title: "ADVANCED AI MODELS",
+                description: "State-of-the-art machine learning and deep learning models tailored to your specific business needs and use cases.",
+                tag: "INNOVATION"
               },
               {
-                icon: TrendingUp,
-                title: "PPC ADVERTISING",
-                description: "Maximize ROI with targeted pay-per-click campaigns across Google, Facebook, and other major platforms.",
-                tag: "ROI"
+                icon: Zap,
+                title: "RAPID DEPLOYMENT",
+                description: "Fast implementation and deployment of AI solutions with agile methodologies and proven frameworks.",
+                tag: "SPEED"
               },
               {
-                icon: Share2,
-                title: "SOCIAL MEDIA MARKETING",
-                description: "Build your brand presence and engage with your audience on all major social media platforms.",
-                tag: "ENGAGEMENT"
+                icon: Network,
+                title: "SEAMLESS INTEGRATION",
+                description: "Easy integration with your existing systems and workflows, ensuring minimal disruption to operations.",
+                tag: "INTEGRATION"
               },
               {
-                icon: FileText,
-                title: "CONTENT MARKETING",
-                description: "Create compelling content that attracts, engages, and converts your target audience effectively.",
-                tag: "CONTENT"
+                icon: Database,
+                title: "DATA-DRIVEN INSIGHTS",
+                description: "Transform your data into actionable insights with AI-powered analytics and predictive modeling.",
+                tag: "ANALYTICS"
               },
               {
-                icon: BarChart3,
-                title: "ANALYTICS & REPORTING",
-                description: "Track performance with comprehensive analytics and data-driven insights to optimize your campaigns.",
-                tag: "INSIGHTS"
+                icon: Code,
+                title: "CUSTOM SOLUTIONS",
+                description: "Bespoke AI development tailored to your unique requirements, from concept to production deployment.",
+                tag: "CUSTOM"
               },
               {
-                icon: Target,
-                title: "BRAND STRATEGY",
-                description: "Develop a cohesive brand identity and marketing strategy that resonates with your audience.",
-                tag: "STRATEGY"
+                icon: Sparkles,
+                title: "CONTINUOUS LEARNING",
+                description: "AI systems that continuously learn and improve, adapting to new data and evolving business needs.",
+                tag: "ADAPTIVE"
               },
             ].map((feature, index) => (
               <motion.div
@@ -854,32 +602,32 @@ export default function DigitalMarketingPage() {
         <ZoomParallax 
           images={[
             {
-              src: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1280&h=720&fit=crop&crop=entropy&auto=format&q=80',
-              alt: 'Digital marketing analytics',
+              src: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1280&h=720&fit=crop&crop=entropy&auto=format&q=80',
+              alt: 'AI technology',
             },
             {
-              src: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1280&h=720&fit=crop&crop=entropy&auto=format&q=80',
-              alt: 'Social media marketing',
+              src: 'https://images.unsplash.com/photo-1555255707-c07966088b7b?w=1280&h=720&fit=crop&crop=entropy&auto=format&q=80',
+              alt: 'Machine learning',
             },
             {
-              src: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=800&fit=crop&crop=entropy&auto=format&q=80',
-              alt: 'Content creation',
+              src: 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&h=800&fit=crop&crop=entropy&auto=format&q=80',
+              alt: 'AI neural network',
             },
             {
-              src: 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=1280&h=720&fit=crop&crop=entropy&auto=format&q=80',
-              alt: 'Marketing strategy',
+              src: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1280&h=720&fit=crop&crop=entropy&auto=format&q=80',
+              alt: 'Data analytics',
             },
             {
-              src: 'https://images.unsplash.com/photo-1559136555-9303baea8ebd?w=800&h=800&fit=crop&crop=entropy&auto=format&q=80',
-              alt: 'Digital transformation',
+              src: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=800&fit=crop&crop=entropy&auto=format&q=80',
+              alt: 'AI automation',
             },
             {
-              src: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=1280&h=720&fit=crop&crop=entropy&auto=format&q=80',
-              alt: 'Online marketing',
+              src: 'https://images.unsplash.com/photo-1555255707-c07966088b7b?w=1280&h=720&fit=crop&crop=entropy&auto=format&q=80',
+              alt: 'Intelligent systems',
             },
             {
-              src: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1280&h=720&fit=crop&crop=entropy&auto=format&q=80',
-              alt: 'Marketing analytics dashboard',
+              src: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=1280&h=720&fit=crop&crop=entropy&auto=format&q=80',
+              alt: 'AI development',
             },
           ]}
         />
