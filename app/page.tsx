@@ -22,7 +22,9 @@ import {
   Briefcase,
   MessageSquare,
   Sparkles,
-  BarChart3
+  BarChart3,
+  Phone,
+  FileText
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -208,6 +210,99 @@ export default function HomePage() {
                 </div>
               </motion.div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Process Section */}
+      <section className="relative py-24 px-4 bg-gradient-to-b from-blue-100/50 via-blue-50/30 to-background overflow-hidden">
+        <div className="max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            {/* Left Side - Content */}
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
+            >
+              <span className="inline-block px-4 py-2 rounded-full border border-slate-300 text-sm font-medium text-slate-600 mb-8">
+                OUR PROCESS
+              </span>
+              
+              <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6 leading-tight">
+                Simple,<br />
+                seamless and streamlined
+              </h2>
+              
+              <p className="text-lg text-muted-foreground leading-relaxed mb-8 max-w-lg">
+                We ensure open and continuous communication throughout to keep you informed and at ease at every step.
+              </p>
+              
+              <Link href="/contact">
+                <Button className="rounded-lg px-6 h-12 text-base font-medium bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/20">
+                  Get Started
+                </Button>
+              </Link>
+            </motion.div>
+
+            {/* Right Side - Timeline */}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="relative"
+            >
+              {/* Vertical Line */}
+              <div className="absolute left-6 top-8 bottom-8 w-px border-l-2 border-dashed border-slate-300" />
+              
+              {/* Timeline Items */}
+              <div className="space-y-12">
+                {[
+                  {
+                    icon: Phone,
+                    title: "Book a discovery call.",
+                    description: "Our expert will reach out to you over a call, tell us about your business and project needs."
+                  },
+                  {
+                    icon: MessageSquare,
+                    title: "Discuss solution and team structure.",
+                    description: "We'll align on project specifications, then select and onboard the right team."
+                  },
+                  {
+                    icon: FileText,
+                    title: "Get a customised proposal.",
+                    description: "We'll prepare and present a detailed proposal, aligning with your goals and expectations."
+                  },
+                  {
+                    icon: TrendingUp,
+                    title: "Get started and track performance.",
+                    description: "We'll get to work while keeping you up to date and adapting as needed."
+                  }
+                ].map((item, index) => (
+                  <motion.div
+                    key={item.title}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: 0.1 * index }}
+                    className="flex gap-6 relative"
+                  >
+                    <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center text-white flex-shrink-0 z-10">
+                      <item.icon className="w-5 h-5" strokeWidth={2} />
+                    </div>
+                    <div className="pt-1">
+                      <h3 className="text-lg font-semibold text-foreground mb-2">
+                        {item.title}
+                      </h3>
+                      <p className="text-muted-foreground leading-relaxed">
+                        {item.description}
+                      </p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
           </div>
         </div>
       </section>
