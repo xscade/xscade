@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, PanInfo } from "framer-motion";
 import { ChevronLeft, ChevronRight, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -147,28 +147,72 @@ export function ServicesCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const [cardWidth, setCardWidth] = useState(0);
+  const [cardsPerView, setCardsPerView] = useState(3);
+  const [isMobile, setIsMobile] = useState(false);
+  const [isTablet, setIsTablet] = useState(false);
 
+  // Detect screen size and update cards per view
+  useEffect(() => {
+    const updateResponsive = () => {
+      const width = window.innerWidth;
+      const mobile = width < 768;
+      const tablet = width >= 768 && width < 1024;
+      const desktop = width >= 1024;
+      
+      setIsMobile(mobile);
+      setIsTablet(tablet);
+      
+      if (mobile) {
+        setCardsPerView(1);
+      } else if (tablet) {
+        setCardsPerView(2);
+      } else {
+        setCardsPerView(3);
+      }
+    };
+
+    updateResponsive();
+    window.addEventListener('resize', updateResponsive);
+    return () => window.removeEventListener('resize', updateResponsive);
+  }, []);
+
+  // Update card width based on screen size
   useEffect(() => {
     const updateCardWidth = () => {
       if (containerRef.current) {
         const containerWidth = containerRef.current.offsetWidth;
-        const padding = 160; // pl-20 + pr-20 = 80px each side = 160px total
-        const gap = 24; // 1.5rem = 24px per gap, 2 gaps = 48px total
-        const availableWidth = containerWidth - padding; // Subtract padding for buttons
-        const width = (availableWidth - (2 * gap)) / 3; // 3 cards with 2 gaps
-        setCardWidth(width);
+        const gap = 24; // 1.5rem = 24px
+        
+        if (isMobile) {
+          // Mobile: Full width minus padding
+          const padding = 32; // px-4 = 16px each side
+          const width = containerWidth - padding;
+          setCardWidth(width);
+        } else if (isTablet) {
+          // Tablet: 2 cards with padding for buttons
+          const padding = 120; // Space for buttons
+          const availableWidth = containerWidth - padding;
+          const width = (availableWidth - gap) / 2; // 2 cards with 1 gap
+          setCardWidth(width);
+        } else {
+          // Desktop: 3 cards with padding for buttons
+          const padding = 160; // pl-20 + pr-20 = 80px each side
+          const availableWidth = containerWidth - padding;
+          const width = (availableWidth - (2 * gap)) / 3; // 3 cards with 2 gaps
+          setCardWidth(width);
+        }
       }
     };
 
     updateCardWidth();
     window.addEventListener('resize', updateCardWidth);
     return () => window.removeEventListener('resize', updateCardWidth);
-  }, []);
+  }, [isMobile, isTablet]);
 
   const goToNext = () => {
     setCurrentIndex((prev) => {
       // Continuous scroll - wrap around when reaching the end
-      if (prev >= services.length - 3) {
+      if (prev >= services.length - cardsPerView) {
         return 0;
       }
       return prev + 1;
@@ -179,52 +223,101 @@ export function ServicesCarousel() {
     setCurrentIndex((prev) => {
       // Continuous scroll - wrap around when reaching the beginning
       if (prev <= 0) {
-        return services.length - 3;
+        return services.length - cardsPerView;
       }
       return prev - 1;
     });
   };
 
-  // Determine if a card should be visible (only show 3 complete cards)
+  const goToIndex = (index: number) => {
+    const maxIndex = Math.max(0, services.length - cardsPerView);
+    setCurrentIndex(Math.min(index, maxIndex));
+  };
+
+  // Handle swipe gesture end
+  const handleDragEnd = (_event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+    const threshold = 50; // Minimum drag distance to trigger navigation
+    const velocity = info.velocity.x;
+
+    // Only trigger navigation if drag is significant or has enough velocity
+    if (Math.abs(info.offset.x) > threshold || Math.abs(velocity) > 500) {
+      if (info.offset.x > 0 || velocity > 0) {
+        // Swiped right - go to previous
+        goToPrevious();
+      } else {
+        // Swiped left - go to next
+        goToNext();
+      }
+    }
+    // The animate prop will handle the reset automatically
+  };
+
+  // Determine if a card should be visible
   const isCardVisible = (index: number) => {
-    return index >= currentIndex && index < currentIndex + 3;
+    return index >= currentIndex && index < currentIndex + cardsPerView;
   };
 
   return (
     <div className="relative w-full">
       {/* Carousel Container */}
       <div className="relative">
-        {/* Previous Button - Left Side, Centered - Away from cards */}
-        <motion.button
-          onClick={goToPrevious}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.95 }}
-          className="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-14 h-14 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 text-white hover:bg-white/20 hover:border-white/30 transition-all duration-300 flex items-center justify-center shadow-lg shadow-blue-900/20"
-          style={{ marginLeft: '-2rem' }}
-        >
-          <ChevronLeft className="w-6 h-6" strokeWidth={2} />
-        </motion.button>
+        {/* Previous Button - Responsive positioning */}
+        {!isMobile && (
+          <motion.button
+            onClick={goToPrevious}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            className={`absolute top-1/2 -translate-y-1/2 z-20 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 text-white hover:bg-white/20 hover:border-white/30 transition-all duration-300 flex items-center justify-center shadow-lg shadow-blue-900/20
+              ${isTablet 
+                ? 'left-2 w-12 h-12' 
+                : 'left-4 w-14 h-14'
+              }`}
+            style={!isTablet ? { marginLeft: '-2rem' } : {}}
+            aria-label="Previous service"
+          >
+            <ChevronLeft className={`${isTablet ? 'w-5 h-5' : 'w-6 h-6'}`} strokeWidth={2} />
+          </motion.button>
+        )}
 
-        {/* Next Button - Right Side, Centered - Away from cards */}
-        <motion.button
-          onClick={goToNext}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.95 }}
-          className="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-14 h-14 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 text-white hover:bg-white/20 hover:border-white/30 transition-all duration-300 flex items-center justify-center shadow-lg shadow-blue-900/20"
-          style={{ marginRight: '-2rem' }}
-        >
-          <ChevronRight className="w-6 h-6" strokeWidth={2} />
-        </motion.button>
+        {/* Next Button - Responsive positioning */}
+        {!isMobile && (
+          <motion.button
+            onClick={goToNext}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            className={`absolute top-1/2 -translate-y-1/2 z-20 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 text-white hover:bg-white/20 hover:border-white/30 transition-all duration-300 flex items-center justify-center shadow-lg shadow-blue-900/20
+              ${isTablet 
+                ? 'right-2 w-12 h-12' 
+                : 'right-4 w-14 h-14'
+              }`}
+            style={!isTablet ? { marginRight: '-2rem' } : {}}
+            aria-label="Next service"
+          >
+            <ChevronRight className={`${isTablet ? 'w-5 h-5' : 'w-6 h-6'}`} strokeWidth={2} />
+          </motion.button>
+        )}
 
-        {/* Sliding Cards Container - Ensure 3 complete cards are visible */}
+        {/* Sliding Cards Container - Responsive padding */}
         <div 
           ref={containerRef}
-          className="relative overflow-hidden pl-20 pr-20"
+          className={`relative overflow-hidden ${
+            isMobile 
+              ? 'px-4' 
+              : isTablet 
+                ? 'pl-16 pr-16' 
+                : 'pl-20 pr-20'
+          }`}
         >
           <motion.div
             className="flex gap-6"
+            drag={isMobile ? "x" : false}
+            dragConstraints={isMobile ? { left: 0, right: 0 } : undefined}
+            dragElastic={isMobile ? 0.2 : undefined}
+            onDragEnd={isMobile ? handleDragEnd : undefined}
             animate={{
-              x: cardWidth > 0 ? `-${currentIndex * (cardWidth + 24)}px` : `-${currentIndex * (100 / 3)}%`,
+              x: cardWidth > 0 
+                ? `-${currentIndex * (cardWidth + 24)}px` 
+                : `-${currentIndex * (100 / cardsPerView)}%`,
             }}
             transition={{
               duration: 0.8,
@@ -238,7 +331,13 @@ export function ServicesCarousel() {
                   key={`${service.name}-${index}`}
                   className="flex-shrink-0"
                   style={{ 
-                    width: cardWidth > 0 ? `${cardWidth}px` : 'calc((100% - 3rem) / 3)',
+                    width: cardWidth > 0 
+                      ? `${cardWidth}px` 
+                      : isMobile 
+                        ? '100%' 
+                        : isTablet 
+                          ? 'calc((100% - 1.5rem) / 2)' 
+                          : 'calc((100% - 3rem) / 3)',
                   }}
                   initial={{ opacity: 0 }}
                   animate={{ 
@@ -253,34 +352,48 @@ export function ServicesCarousel() {
                     }
                   }}
                 >
-                  <div className={`h-full bg-white/10 backdrop-blur-sm rounded-3xl p-10 transition-all duration-500 border border-white/10 ${visible ? 'hover:bg-white/20 hover:shadow-2xl hover:shadow-blue-900/20' : ''}`}>
-                  {/* Icon */}
-                  <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center text-white mb-8 group-hover:bg-white group-hover:text-blue-600 transition-all duration-500 border border-white/20">
-                    <service.icon className="w-6 h-6" strokeWidth={1.5} />
+                  <div className={`h-full bg-white/10 backdrop-blur-sm rounded-3xl border border-white/10 transition-all duration-500 ${
+                    visible ? 'hover:bg-white/20 hover:shadow-2xl hover:shadow-blue-900/20' : ''
+                  } ${
+                    isMobile ? 'p-6' : 'p-10'
+                  }`}>
+                    {/* Icon */}
+                    <div className={`rounded-2xl bg-white/10 flex items-center justify-center text-white mb-6 group-hover:bg-white group-hover:text-blue-600 transition-all duration-500 border border-white/20 ${
+                      isMobile ? 'w-10 h-10 mb-6' : 'w-12 h-12 mb-8'
+                    }`}>
+                      <service.icon className={`${isMobile ? 'w-5 h-5' : 'w-6 h-6'}`} strokeWidth={1.5} />
+                    </div>
+
+                    {/* Title */}
+                    <h3 className={`font-semibold text-white tracking-tight leading-tight mb-4 ${
+                      isMobile ? 'text-2xl' : 'text-3xl'
+                    }`}>
+                      {service.name}
+                    </h3>
+
+                    {/* Description */}
+                    <p className={`text-blue-100 leading-relaxed mb-6 ${
+                      isMobile ? 'text-sm' : 'text-[15px]'
+                    }`}>
+                      {service.description}
+                    </p>
+
+                    {/* Features List */}
+                    <ul className={`space-y-3 ${isMobile ? 'space-y-2' : ''}`}>
+                      {service.features.map((feature, i) => (
+                        <li key={feature} className="flex items-center gap-3">
+                          <div className={`rounded-full bg-white/20 flex items-center justify-center flex-shrink-0 ${
+                            isMobile ? 'w-4 h-4' : 'w-5 h-5'
+                          }`}>
+                            <CheckCircle2 className={`text-white ${isMobile ? 'w-3 h-3' : 'w-3.5 h-3.5'}`} />
+                          </div>
+                          <span className={`text-blue-100 ${isMobile ? 'text-xs' : 'text-sm'}`}>
+                            {feature}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
-
-                  {/* Title */}
-                  <h3 className="text-3xl font-semibold text-white tracking-tight leading-tight mb-4">
-                    {service.name}
-                  </h3>
-
-                  {/* Description */}
-                  <p className="text-blue-100 leading-relaxed text-[15px] mb-6">
-                    {service.description}
-                  </p>
-
-                  {/* Features List */}
-                  <ul className="space-y-3">
-                    {service.features.map((feature, i) => (
-                      <li key={feature} className="flex items-center gap-3">
-                        <div className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-white" />
-                        </div>
-                        <span className="text-sm text-blue-100">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
                 </motion.div>
               );
             })}
@@ -288,24 +401,52 @@ export function ServicesCarousel() {
         </div>
       </div>
 
+      {/* Mobile Navigation Buttons - Inside card area */}
+      {isMobile && (
+        <div className="flex items-center justify-between px-4 mt-6">
+          <motion.button
+            onClick={goToPrevious}
+            whileTap={{ scale: 0.95 }}
+            className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 text-white hover:bg-white/20 hover:border-white/30 transition-all duration-300 flex items-center justify-center shadow-lg shadow-blue-900/20"
+            aria-label="Previous service"
+          >
+            <ChevronLeft className="w-5 h-5" strokeWidth={2} />
+          </motion.button>
+
+          <motion.button
+            onClick={goToNext}
+            whileTap={{ scale: 0.95 }}
+            className="w-10 h-10 rounded-full bg-white/10 backdrop-blur-xl border border-white/20 text-white hover:bg-white/20 hover:border-white/30 transition-all duration-300 flex items-center justify-center shadow-lg shadow-blue-900/20"
+            aria-label="Next service"
+          >
+            <ChevronRight className="w-5 h-5" strokeWidth={2} />
+          </motion.button>
+        </div>
+      )}
+
       {/* Dots Indicator */}
       <div className="flex items-center justify-center gap-2 flex-wrap mt-8">
         {services.map((_, index) => {
-          const isVisible = index >= currentIndex && index < currentIndex + 3;
+          const isVisible = index >= currentIndex && index < currentIndex + cardsPerView;
+          const isActive = index === currentIndex;
           return (
             <button
               key={index}
-              onClick={() => {
-                // Calculate the starting index to show this service
-                const newIndex = Math.min(index, Math.max(0, services.length - 3));
-                setCurrentIndex(newIndex);
-              }}
+              onClick={() => goToIndex(index)}
               className={`transition-all duration-300 rounded-full ${
-                isVisible
-                  ? "w-3 h-3 bg-white"
-                  : "w-2 h-2 bg-white/40 hover:bg-white/60"
+                isActive
+                  ? isMobile 
+                    ? "w-2.5 h-2.5 bg-white" 
+                    : "w-3 h-3 bg-white"
+                  : isVisible
+                    ? isMobile
+                      ? "w-2 h-2 bg-white/60"
+                      : "w-2.5 h-2.5 bg-white/60"
+                    : isMobile
+                      ? "w-1.5 h-1.5 bg-white/30"
+                      : "w-2 h-2 bg-white/40 hover:bg-white/60"
               }`}
-              aria-label={`Go to slide ${index + 1}`}
+              aria-label={`Go to service ${index + 1}`}
             />
           );
         })}
@@ -313,9 +454,15 @@ export function ServicesCarousel() {
 
       {/* Service Counter */}
       <div className="text-center mt-6">
-        <span className="text-sm text-white/70">
-          {currentIndex + 1}-{Math.min(currentIndex + 3, services.length)} of {services.length}
+        <span className={`text-white/70 ${isMobile ? 'text-xs' : 'text-sm'}`}>
+          {isMobile 
+            ? `${currentIndex + 1} of ${services.length}`
+            : `${currentIndex + 1}-${Math.min(currentIndex + cardsPerView, services.length)} of ${services.length}`
+          }
         </span>
+        {isMobile && (
+          <p className="text-xs text-white/50 mt-2">Swipe to navigate</p>
+        )}
       </div>
     </div>
   );

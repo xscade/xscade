@@ -40,24 +40,24 @@ export default function HomePage() {
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,white_1px,transparent_1px)] bg-[size:60px_60px]" />
         </div>
 
-        <div className="relative mx-auto max-w-7xl px-6 py-24">
+        <div className="relative mx-auto max-w-7xl px-4 py-16 md:px-6 md:py-24">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
-            className="mb-16 flex flex-col gap-6 border-b border-white/20 pb-8 md:flex-row md:items-end md:justify-between"
+            className="mb-12 md:mb-16 flex flex-col gap-6 border-b border-white/20 pb-6 md:pb-8 md:flex-row md:items-end md:justify-between"
           >
             <div className="flex flex-col gap-3">
               <span className="text-xs uppercase tracking-[0.35em] text-white/70">
                 Our Services
               </span>
-              <h2 className="text-4xl font-bold tracking-tight md:text-6xl text-white leading-tight">
-                Comprehensive Solutions<br />for Your Business
+              <h2 className="text-3xl md:text-4xl lg:text-6xl font-bold tracking-tight text-white leading-tight">
+                Comprehensive Solutions<br className="hidden md:block" />for Your Business
               </h2>
             </div>
             <div className="flex flex-col items-start gap-4 md:items-end md:max-w-sm">
-              <p className="text-base text-white/80 leading-relaxed">
+              <p className="text-sm md:text-base text-white/80 leading-relaxed">
                 Elevate your digital presence and drive business success with our expert services.
               </p>
             </div>
