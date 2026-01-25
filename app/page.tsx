@@ -7,7 +7,6 @@ import { ServicesCarousel } from "@/components/ServicesCarousel";
 import { SplineScene } from "@/components/SplineScene";
 import { TestimonialsSection } from "@/components/ui/testimonial-v2";
 import { ZoomParallax } from "@/components/ui/zoom-parallax";
-import { LogoCloud } from "@/components/ui/logo-cloud-2";
 import { motion } from "framer-motion";
 import { 
   Users, 
@@ -250,37 +249,6 @@ export default function HomePage() {
             },
           ]}
         />
-      </section>
-
-      {/* Logo Cloud Section */}
-      <section className="relative py-24 px-4 bg-background overflow-hidden">
-        <div className="max-w-7xl mx-auto">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-2xl md:text-3xl font-medium text-foreground tracking-tight mb-2">
-              Companies we{" "}
-              <span className="font-semibold text-primary">collaborate</span> with
-            </h2>
-            <p className="text-muted-foreground text-sm md:text-base">
-              Trusted by leading technology companies worldwide
-            </p>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="relative mx-auto max-w-5xl"
-          >
-            <LogoCloud className="border-border" />
-          </motion.div>
-        </div>
       </section>
 
       <Footer />
