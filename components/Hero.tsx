@@ -8,7 +8,7 @@ import { DottedSurface } from "@/components/ui/dotted-surface";
 
 export function Hero() {
   return (
-    <div className="relative min-h-screen flex flex-col items-center justify-center px-4 pt-20 pb-16 md:pb-24 lg:pb-32 overflow-hidden bg-background">
+    <div className="relative min-h-screen flex flex-col items-center justify-center px-4 pt-20 pb-16 md:pb-0 overflow-hidden bg-background">
       {/* Dotted Surface Background Shader */}
       <DottedSurface className="absolute inset-0 z-0" />
       
@@ -116,7 +116,7 @@ export function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.4 }}
-          className="flex flex-wrap justify-center gap-8 pt-8 pb-4 md:pb-8 text-sm text-muted-foreground font-medium"
+          className="flex flex-wrap justify-center gap-8 pt-8 pb-4 md:pb-0 text-sm text-muted-foreground font-medium"
         >
           <div className="flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4 text-primary" />
