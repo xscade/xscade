@@ -4,12 +4,16 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { CheckCircle2, ArrowRight } from "lucide-react";
+import { DottedSurface } from "@/components/ui/dotted-surface";
 
 export function Hero() {
   return (
-    <div className="relative min-h-screen flex flex-col items-center justify-center px-4 pt-20 overflow-hidden bg-background">
+    <div className="relative min-h-screen flex flex-col items-center justify-center px-4 pt-20 pb-16 md:pb-24 lg:pb-32 overflow-hidden bg-background">
+      {/* Dotted Surface Background Shader */}
+      <DottedSurface className="absolute inset-0 z-0" />
+      
       {/* Background Effects */}
-      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+      <div className="absolute inset-0 z-[1] pointer-events-none overflow-hidden">
         {/* Main Center Glow */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[120px]" />
         
@@ -112,7 +116,7 @@ export function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.4 }}
-          className="flex flex-wrap justify-center gap-8 pt-8 text-sm text-muted-foreground font-medium"
+          className="flex flex-wrap justify-center gap-8 pt-8 pb-4 md:pb-8 text-sm text-muted-foreground font-medium"
         >
           <div className="flex items-center gap-2">
             <CheckCircle2 className="w-4 h-4 text-primary" />
