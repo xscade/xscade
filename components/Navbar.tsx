@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import {
@@ -46,8 +47,15 @@ export function Navbar() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
-            <Link href="/" className="text-xl font-semibold tracking-tight text-slate-900">
-              Xscade
+            <Link href="/" className="flex items-center">
+              <Image
+                src="/logo.svg"
+                alt="Xscade"
+                width={160}
+                height={60}
+                className="invert"
+                priority
+              />
             </Link>
 
             {/* Desktop Navigation */}
@@ -72,20 +80,15 @@ export function Navbar() {
                       transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
                       className="absolute top-full left-0 pt-2"
                     >
-                      <div className="bg-white rounded-2xl shadow-2xl shadow-slate-200/50 border border-slate-100 p-2 w-72">
+                      <div className="bg-white rounded-2xl shadow-2xl shadow-slate-200/50 border border-slate-100 p-2 w-64">
                         {services.map((item) => (
                           <Link
                             key={item.name}
                             href={item.href}
-                            className="flex items-start gap-3 p-3 rounded-xl hover:bg-slate-50 transition-colors group"
+                            className="block p-3 rounded-xl hover:bg-slate-50 transition-colors"
                           >
-                            <div className="w-10 h-10 rounded-xl bg-slate-100 flex items-center justify-center text-slate-500 group-hover:bg-primary group-hover:text-white transition-all">
-                              <item.icon className="w-5 h-5" strokeWidth={1.5} />
-                            </div>
-                            <div>
-                              <div className="text-sm font-medium text-slate-900">{item.name}</div>
-                              <div className="text-xs text-slate-500">{item.description}</div>
-                            </div>
+                            <div className="text-sm font-medium text-slate-900">{item.name}</div>
+                            <div className="text-xs text-slate-500 mt-0.5">{item.description}</div>
                           </Link>
                         ))}
                       </div>
