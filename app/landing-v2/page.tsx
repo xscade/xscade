@@ -186,7 +186,7 @@ export default function AgenticAgileLandingPage() {
       </section>
 
       {/* AI Agents Spline Section */}
-      <section className="relative w-full h-[80vh] bg-gradient-to-br from-blue-900 via-blue-950 to-background overflow-hidden flex items-center">
+      <section className="relative w-full bg-gradient-to-br from-blue-900 via-blue-950 to-background overflow-hidden pt-24 pb-12">
         <div className="absolute inset-0 flex items-start justify-center pt-24 z-0 pointer-events-none opacity-5">
           <h2 className="text-8xl md:text-[12rem] font-bold text-white select-none whitespace-nowrap">
             AI AGENTS
@@ -207,10 +207,10 @@ export default function AgenticAgileLandingPage() {
               </Button>
             </div>
           </div>
-          <div className="flex-1 w-full h-[500px]">
+          <div className="flex-1 w-full h-[450px] md:h-[550px] flex items-center justify-center -mb-12">
             <SplineScene 
               scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
-              className="w-full h-full"
+              className="w-full h-full scale-[1.2]"
             />
           </div>
         </div>
