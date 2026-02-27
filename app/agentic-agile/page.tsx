@@ -46,7 +46,7 @@ export default function AgenticAgileLandingPage() {
       <LandingHero />
 
       {/* Stats Bar */}
-      <section className="py-10 bg-background border-b border-border/40">
+      <section className="py-12 bg-[#030712] border-b border-white/5">
         <div className="max-w-7xl mx-auto px-4 md:px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
             {[
@@ -63,12 +63,12 @@ export default function AgenticAgileLandingPage() {
                 transition={{ delay: i * 0.1 }}
                 className="flex items-center gap-4"
               >
-                <div className="w-11 h-11 rounded-xl bg-blue-50 dark:bg-blue-950/50 flex items-center justify-center flex-shrink-0">
-                  <stat.icon className="w-5 h-5 text-blue-600" />
+                <div className="w-11 h-11 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center flex-shrink-0">
+                  <stat.icon className="w-5 h-5 text-blue-400" />
                 </div>
                 <div>
-                  <div className="text-2xl md:text-3xl font-bold text-foreground tracking-tight">{stat.value}</div>
-                  <div className="text-xs md:text-sm text-muted-foreground font-medium">{stat.label}</div>
+                  <div className="text-2xl md:text-3xl font-bold text-white tracking-tight">{stat.value}</div>
+                  <div className="text-xs md:text-sm text-white/50 font-medium">{stat.label}</div>
                 </div>
               </motion.div>
             ))}
@@ -77,9 +77,9 @@ export default function AgenticAgileLandingPage() {
       </section>
 
       {/* Trusted By Section */}
-      <section className="py-12 border-b border-border/40 bg-muted/20">
+      <section className="py-12 border-b border-white/5 bg-[#030712]">
         <div className="max-w-7xl mx-auto px-4 md:px-6 text-center">
-          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-10">Trusted by Leading Enterprises</p>
+          <p className="text-xs uppercase tracking-[0.2em] text-white/40 font-semibold mb-10">Trusted by Leading Enterprises</p>
           <motion.div
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
@@ -100,7 +100,7 @@ export default function AgenticAgileLandingPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.08 }}
-                className="px-6 py-3 rounded-xl bg-background border border-border/60 text-muted-foreground/60 hover:text-muted-foreground hover:border-border transition-all duration-300"
+                className="px-6 py-3 rounded-xl bg-white/5 border border-white/10 text-white/40 hover:text-white/70 hover:border-white/20 transition-all duration-300"
               >
                 <span className={`text-lg md:text-xl ${company.style}`}>{company.name}</span>
               </motion.div>
