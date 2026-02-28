@@ -138,3 +138,8 @@ body {
 .animate-marquee {
   animation: marquee 20s linear infinite;
 }
+
+/* Push navbar below marquee banner on pages that have one */
+.has-marquee nav {
+  top: 1.25rem !important;
+}
