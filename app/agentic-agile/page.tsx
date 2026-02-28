@@ -30,9 +30,12 @@ import Link from "next/link";
 
 export default function AgenticAgileLandingPage() {
   return (
-    <div className="min-h-screen bg-background has-marquee">
+    <div className="min-h-screen bg-background">
+      {/* Force navbar below the 20px marquee */}
+      <style>{`nav.fixed { top: 20px !important; }`}</style>
+
       {/* Marquee Banner */}
-      <div className="fixed top-0 left-0 right-0 z-[60] h-5 bg-primary overflow-hidden flex items-center">
+      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 60, height: '20px' }} className="bg-primary overflow-hidden flex items-center">
         <div className="animate-marquee whitespace-nowrap flex items-center gap-12 text-white text-[11px] font-medium">
           {[...Array(4)].map((_, i) => (
             <span key={i} className="inline-flex items-center gap-3">
@@ -47,7 +50,7 @@ export default function AgenticAgileLandingPage() {
         </div>
       </div>
 
-      <div className="h-5" /> {/* Spacer for fixed marquee */}
+      <div style={{ height: '20px' }} /> {/* Spacer for fixed marquee */}
       <Navbar />
       <LandingHero />
 
