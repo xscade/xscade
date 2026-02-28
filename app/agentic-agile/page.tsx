@@ -31,18 +31,26 @@ import Link from "next/link";
 export default function AgenticAgileLandingPage() {
   return (
     <div className="min-h-screen bg-background">
-      {/* Top Banner */}
-      <div className="bg-gradient-to-r from-blue-700 via-blue-600 to-blue-500 text-white text-center py-2.5 px-4 text-sm font-medium">
-        <span className="inline-flex items-center gap-2">
-          <span className="inline-flex items-center rounded-full bg-white/20 px-2 py-0.5 text-xs font-semibold uppercase tracking-wider">Limited</span>
-          Flat 10% Off on Your First Sprint – Valid for this month.
-          <Link href="/contact" className="underline underline-offset-2 hover:text-blue-100 font-semibold">
-            Book a Call Now <ArrowRight className="inline w-3 h-3" />
-          </Link>
-        </span>
+      {/* Marquee Banner */}
+      <div className="fixed top-0 left-0 right-0 z-[60] h-5 bg-primary overflow-hidden flex items-center">
+        <div className="animate-marquee whitespace-nowrap flex items-center gap-12 text-white text-[11px] font-medium">
+          {[...Array(4)].map((_, i) => (
+            <span key={i} className="inline-flex items-center gap-3">
+              <span className="inline-flex items-center rounded-full bg-white/20 px-1.5 py-px text-[9px] font-semibold uppercase tracking-wider">Limited</span>
+              Flat 10% Off on Your First Sprint – Valid for this month.
+              <Link href="/contact" className="underline underline-offset-2 hover:text-blue-100 font-semibold">
+                Book a Call Now
+              </Link>
+              <span className="text-white/40">•</span>
+            </span>
+          ))}
+        </div>
       </div>
 
-      <Navbar />
+      <div className="h-5" /> {/* Spacer for fixed marquee */}
+      <div className="[&_nav]:top-5">
+        <Navbar />
+      </div>
       <LandingHero />
 
       {/* Stats Bar */}
